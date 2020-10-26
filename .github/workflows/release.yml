@@ -30,6 +30,8 @@ jobs:
           prerelease: false
           body: |
             Release ${{ steps.vars.outputs.tag }} of crypt4gh GUI (Graphical User Interface).
+            Release ${{ steps.vars.outputs.tag }} of crypt4gh CLI (Command Line Interface).
+            Download artifacts in zip archives below.
 
   build_gui_release:
     name: Upload GUI Release Asset
@@ -143,10 +145,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           pip install .
-      - name: Build GUI artifact 
+      - name: Build CLI artifact 
         run: |
           pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
-      - name: Build GUI Asset
+      - name: Build CLI Asset
         run: |
           cd ./dist
           zip --junk-paths ${{ matrix.asset_name }} ${{ matrix.artifact_name }}
