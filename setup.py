@@ -2,14 +2,14 @@ from setuptools import setup
 
 setup(
     name="sda_uploader",
-    version="0.1.0",
+    version="0.2.0",
     license="Apache-2.0",
     author="CSC - IT Center for Science Ltd.",
     author_email="",
     description="Encryption and uploading tool.",
     long_description="",
     packages=["sda_uploader"],
-    entry_points={"console_scripts": ["sdagui=sda_uploader.__main__:main"]},
+    entry_points={"console_scripts": ["sdagui=sda_uploader.__main__:main", "sdacli=sda_uploader.cli:main"]},
     platforms="any",
     classifiers=[
         "Development Status :: 3 - Alpha",

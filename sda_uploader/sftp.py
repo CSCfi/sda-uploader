@@ -4,7 +4,7 @@ from .encrypt import encrypt_file, verify_crypt4gh_header
 from pathlib import Path
 
 
-def _sftp_connection(username=None, hostname=None, port=22, rsa_key=None, sftp_pass=None):
+def _sftp_connection(username=None, hostname=None, port=22, sftp_key=None, sftp_pass=None):
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
     print(
@@ -14,7 +14,7 @@ def _sftp_connection(username=None, hostname=None, port=22, rsa_key=None, sftp_p
     client = paramiko.SSHClient()
     try:
         print("Testing if SFTP key is of type RSA")
-        paramiko_key = paramiko.RSAKey.from_private_key_file(rsa_key, password=sftp_pass)
+        paramiko_key = paramiko.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname,
@@ -34,7 +34,7 @@ def _sftp_connection(username=None, hostname=None, port=22, rsa_key=None, sftp_p
     # Test if key is ed25519
     try:
         print("Testing if SFTP key is of type Ed25519")
-        paramiko_key = paramiko.ed25519key.Ed25519Key(filename=rsa_key, password=sftp_pass)
+        paramiko_key = paramiko.ed25519key.Ed25519Key(filename=sftp_key, password=sftp_pass)
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname,
