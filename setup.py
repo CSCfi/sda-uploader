@@ -1,8 +1,9 @@
 from setuptools import setup
+from sda_uploader import __version__
 
 setup(
     name="sda_uploader",
-    version="0.2.0",
+    version=__version__,
     license="Apache-2.0",
     author="CSC - IT Center for Science Ltd.",
     author_email="",
