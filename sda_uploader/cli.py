@@ -1,6 +1,5 @@
 """SDA Uploader CLI."""
 
-import os
 import sys
 import secrets
 import getpass
@@ -12,6 +11,7 @@ from functools import partial
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
 from .sftp import _sftp_connection, _sftp_upload_file, _sftp_upload_directory, _sftp_client
+from . import __version__
 
 
 def mock_callback(password):
@@ -153,7 +153,7 @@ def parse_arguments(arguments):
     parser.add_argument(
         "-pub", "--public_key", default=None, help="Crypt4GH recipient public key. Required for encryption."
     )
-    parser.add_argument("-v", "--version", action="version", version="0.2.0", help="Display program version.")
+    parser.add_argument("-v", "--version", action="version", version=__version__, help="Display program version.")
     if len(sys.argv) <= 1:
         # If no command line arguments were given, print help text
         sys.exit(parser.print_help())
