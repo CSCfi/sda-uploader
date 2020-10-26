@@ -253,7 +253,7 @@ class GUI:
             username=sftp_username,
             hostname=sftp_hostname,
             port=sftp_port,
-            rsa_key=self.sftp_key_value.get(),
+            sftp_key=self.sftp_key_value.get(),
             sftp_pass=sftp_password,
         )
         # Encrypt and upload
@@ -319,9 +319,11 @@ class GUI:
                 data = json.loads(f.read())
         return data
 
-    def test_sftp_connection(self, username=None, hostname=None, port=22, rsa_key=None, sftp_pass=None):
+    def test_sftp_connection(self, username=None, hostname=None, port=22, sftp_key=None, sftp_pass=None):
         """Test SFTP connection and determine key type before uploading."""
-        sftp_auth = _sftp_connection(username, hostname, port, rsa_key, sftp_pass)
+        sftp_auth = _sftp_connection(
+            username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass
+        )
         self.write_config()  # save fields
         return sftp_auth
 
