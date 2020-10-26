@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(
-    name="sds_uploader",
+    name="sda_uploader",
     version="0.1.0",
     license="Apache-2.0",
     author="CSC - IT Center for Science Ltd.",
     author_email="",
-    description="FUSE client for accessing the SDA.",
+    description="Encryption and uploading tool.",
     long_description="",
-    packages=["crypt4gh_gui"],
-    entry_points={"console_scripts": ["sds_uploader=crypt4gh_gui.__main__:main"]},
+    packages=["sda_uploader"],
+    entry_points={"console_scripts": ["sdagui=sda_uploader.__main__:main"]},
     platforms="any",
     classifiers=[
         "Development Status :: 3 - Alpha",

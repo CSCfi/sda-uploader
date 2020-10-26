@@ -1,9 +1,8 @@
-# SDS Uploader
-
-This is a simple Graphical User Interface wrapped around the [crypt4gh python module](https://github.com/EGA-archive/crypt4gh). SDS Uploader is a modified Crypt4GH GUI with SFTP uploading feature.
+# SDA Uploader
+SDA Uploader is a tool for encrypting and uploading files. Files are encrypted with [Crypt4GH](http://samtools.github.io/hts-specs/crypt4gh.pdf) and uploaded with [SFTP](https://www.ssh.com/ssh/sftp/).
 
 ## Demo
-[![Demo Video](https://kannu.csc.fi/s/KP5paigcXnRo8fo/preview)](https://kannu.csc.fi/s/LiKpZ9zWznokjKn)
+[![Demo Video](https://kannu.csc.fi/s/Z5wnNDPFfgR5583/preview)](https://kannu.csc.fi/s/DiD4Bicx8zwd4Gf)
 
 Click on the picture above to view the demo video
 
@@ -23,12 +22,13 @@ The GUI requires:
 - Tkinter
 
 ```
-git clone https://github.com/CSCfi/crypt4gh-gui
-cd crypt4gh-gui
-pip install .
+git clone https://github.com/CSCfi/sda-uploader
+pip install ./sda-uploader
 
-sds_uploader
+sdagui
 ```
+
+Saved fields are kept in `.sda_uploader_config.json` in the user's home directory.
 
 ## Build Standalone Executable
 
@@ -40,18 +40,18 @@ The GUI can be built into a standalone executable and distributed to machines th
 ```
 pip install pyinstaller
 
-pyinstaller --onefile crypt4gh_gui/crypt4gh_gui.py
+pyinstaller --noconsole --onefile sdagui.py
 ```
 
-This has been tested on Linux and Windows.
+This has been tested on Linux, Mac and Windows.
 
-To run the executable on Linux:
+To run the executable on Linux and Mac:
 ```
-./crypt4gh_gui
+./sdagui
 ```
 
 To run the executable on Windows:
-- Double click on `crypt4gh_gui.exe` or run the following in `cmd`:
+- Double click on `sdagui.exe` or run the following in `cmd`:
 ```
-crypt4gh_gui.exe
+sdagui.exe
 ```

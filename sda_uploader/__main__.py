@@ -1,4 +1,4 @@
-from .crypt4gh_gui import GUI
+from .gui import GUI
 import tkinter as tk
 
 

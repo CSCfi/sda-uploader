@@ -1,4 +1,4 @@
-"""CSC SDS SFTP GUI."""
+"""SDA Uploader GUI."""
 
 import sys
 import json
@@ -44,7 +44,7 @@ class GUI:
         sys.stdout.write = self.print_redirect  # type:ignore
 
         # Load previous values from config file
-        self.config_file = Path(Path.home()).joinpath(".crypt4gh_config.json")
+        self.config_file = Path(Path.home()).joinpath(".sda_uploader_config.json")
         data = self.read_config(self.config_file)
 
         # 1st column FIELDS AND LABELS
