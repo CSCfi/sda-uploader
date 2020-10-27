@@ -29,7 +29,9 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            Release ${{ steps.vars.outputs.tag }} of crypt4gh GUI (Graphical User Interface).
+            Release ${{ steps.vars.outputs.tag }} of SDA Uploader GUI (Graphical User Interface).
+            Release ${{ steps.vars.outputs.tag }} of SDA Uploader CLI (Command Line Interface).
+            Download artifacts in zip archives below.
 
   build_gui_release:
     name: Upload GUI Release Asset
@@ -40,17 +42,17 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
-            artifact_name: crypt4gh-gui
+            artifact_name: sdagui
             os_suffix: linux-amd64
-            asset_name: crypt4gh-gui
+            asset_name: sdagui
           - os: windows-latest
-            artifact_name: crypt4gh-gui.exe
+            artifact_name: sdagui.exe
             os_suffix: windows-amd64
-            asset_name: crypt4gh-gui
+            asset_name: sdagui
           - os: macos-latest
-            artifact_name: crypt4gh-gui
+            artifact_name: sdagui
             os_suffix: macos-amd64
-            asset_name: crypt4gh-gui
+            asset_name: sdagui
         python-version: [3.7]
     
     runs-on: ${{ matrix.os }}
@@ -105,17 +107,17 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
-            artifact_name: crypt4gh-cli
+            artifact_name: sdacli
             os_suffix: linux-amd64
-            asset_name: crypt4gh-cli
+            asset_name: sdacli
           - os: windows-latest
-            artifact_name: crypt4gh-cli.exe
+            artifact_name: sdacli.exe
             os_suffix: windows-amd64
-            asset_name: crypt4gh-cli
+            asset_name: sdacli
           - os: macos-latest
-            artifact_name: crypt4gh-cli
+            artifact_name: sdacli
             os_suffix: macos-amd64
-            asset_name: crypt4gh-cli
+            asset_name: sdacli
         python-version: [3.7]
     
     runs-on: ${{ matrix.os }}
@@ -143,10 +145,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           pip install .
-      - name: Build GUI artifact 
+      - name: Build CLI artifact 
         run: |
           pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
-      - name: Build GUI Asset
+      - name: Build CLI Asset
         run: |
           cd ./dist
           zip --junk-paths ${{ matrix.asset_name }} ${{ matrix.artifact_name }}
