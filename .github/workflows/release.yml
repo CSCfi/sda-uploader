@@ -31,6 +31,7 @@ jobs:
           body: |
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader GUI (Graphical User Interface).
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader CLI (Command Line Interface).
+            Linux build requires `glibc>=2.25`.
             Download artifacts in zip archives below.
 
   build_gui_release:
@@ -82,7 +83,7 @@ jobs:
           pip install .
       - name: Build GUI artifact 
         run: |
-          pyinstaller --onefile sdagui.py --name ${{ matrix.asset_name }}
+          pyinstaller --noconsole --onefile sdagui.py --name ${{ matrix.asset_name }}
       - name: Build GUI Asset
         run: |
           cd ./dist
