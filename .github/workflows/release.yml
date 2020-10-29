@@ -31,7 +31,7 @@ jobs:
           body: |
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader GUI (Graphical User Interface).
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader CLI (Command Line Interface).
-            Linux build requires `glibc>=2.25`.
+            Linux requires `glibc>=2.17`.
             Download artifacts in zip archives below.
 
   build_gui_release:
