@@ -31,7 +31,7 @@ jobs:
           body: |
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader GUI (Graphical User Interface).
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader CLI (Command Line Interface).
-            Linux build requires `glibc>=2.25`.
+            Linux requires `glibc>=2.17`.
             Download artifacts in zip archives below.
 
   build_gui_release:
@@ -81,7 +81,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           pip install .
-      - name: Build GUI artifact 
+      - name: Build GUI artifact Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
+          docker pull cscfi/pyinstaller
+          docker run --rm -v "${PWD}:/builder" cscfi/pyinstaller --noconsole --onefile sdagui.py --name ${{ matrix.asset_name }}
+          sudo chown -R $USER:$GROUP dist/
+      - name: Build GUI artifact
+        if: matrix.os != 'ubuntu-latest'
         run: |
           pyinstaller --noconsole --onefile sdagui.py --name ${{ matrix.asset_name }}
       - name: Build GUI Asset
@@ -146,7 +154,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           pip install .
-      - name: Build CLI artifact 
+      - name: Build CLI artifact Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
+          docker pull cscfi/pyinstaller
+          docker run --rm -v "${PWD}:/builder" cscfi/pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
+          sudo chown -R $USER:$GROUP dist/
+      - name: Build CLI artifact
+        if: matrix.os != 'ubuntu-latest'
         run: |
           pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
       - name: Build CLI Asset
