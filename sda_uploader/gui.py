@@ -1,8 +1,11 @@
 """SDA Uploader GUI."""
 
+import os
 import sys
+import stat
 import json
 import getpass
+import secrets
 import tkinter as tk
 from typing import Dict
 
@@ -49,7 +52,7 @@ class GUI:
 
         # 1st column FIELDS AND LABELS
 
-        self.my_key_label = tk.Label(window, text="My Private Key")
+        self.my_key_label = tk.Label(window, text="My Private Key (Optional)")
         self.my_key_label.grid(column=0, row=0, sticky=tk.W)
         self.my_key_value = tk.StringVar()
         self.my_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.my_key_value)
@@ -59,7 +62,7 @@ class GUI:
         if private_key_file and Path(private_key_file).is_file():
             self.my_key_value.set(private_key_file)
 
-        self.their_key_label = tk.Label(window, text="Recipient Public Key")
+        self.their_key_label = tk.Label(window, text="*Recipient Public Key")
         self.their_key_label.grid(column=0, row=2, sticky=tk.W)
         self.their_key_value = tk.StringVar()
         self.their_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.their_key_value)
@@ -69,14 +72,14 @@ class GUI:
         if public_key_file and Path(public_key_file).is_file():
             self.their_key_value.set(public_key_file)
 
-        self.file_label = tk.Label(window, text="File or Directory to Upload")
+        self.file_label = tk.Label(window, text="*File or Directory to Upload")
         self.file_label.grid(column=0, row=4, sticky=tk.W)
         self.file_value = tk.StringVar()
         self.file_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.file_value)
         self.file_field.grid(column=0, row=5, sticky=tk.W)
         self.file_field.config(state="disabled")
 
-        self.sftp_label = tk.Label(window, text="SFTP Credentials")
+        self.sftp_label = tk.Label(window, text="*SFTP Credentials")
         self.sftp_label.grid(column=0, row=6, sticky=tk.W)
         self.sftp_value = tk.StringVar()
         placeholder_sftp_value = "username@server:22"
@@ -289,8 +292,40 @@ class GUI:
                 if password is None:
                     return
             self._get_private_key(password)
+        elif self.their_key_value.get() and self.file_value.get() and self.sftp_value.get():
+            # Generate random encryption key
+            temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
+            # Set private key value
+            self.my_key_value.set(temp_private_key)
+            # Encrypt and upload
+            self._get_private_key(temp_password)
+            # Remove temp keys
+            self.my_key_value.set("")
+            self._remove_file(temp_private_key)
+            self._remove_file(temp_public_key)
         else:
-            print("All fields must be filled before file upload can be started")
+            print("Fields marked with * must be filled")
+
+    def _remove_file(self, filepath):
+        """Remove temp files."""
+        try:
+            Path(filepath).unlink()
+            print(f"Removed temp file {filepath}")
+        except FileNotFoundError:
+            print(f"Temp file {filepath} not found")
+            pass
+
+    def _generate_one_time_key(self):
+        """Generate one time Crypt4GH encryption key."""
+        random_password = secrets.token_hex(16)
+        private_key_file = f"{getpass.getuser()}_temporary_crypt4gh.key"
+        public_key_file = f"{getpass.getuser()}_temporary_crypt4gh.pub"
+        # Remove existing temp keys if they exist
+        self._remove_file(private_key_file)
+        self._remove_file(public_key_file)
+        c4gh.generate(private_key_file, public_key_file, callback=partial(self.mock_callback, random_password))
+        print("One-time use encryption key generated")
+        return private_key_file, public_key_file, random_password
 
     def password_prompt(self, action):
         """Ask user for private key password."""
@@ -316,6 +351,8 @@ class GUI:
         }
         with open(self.config_file, "w") as f:
             f.write(json.dumps(data))
+        # Set file to be readable and writable
+        os.chmod(self.config_file, stat.S_IRWXU)
 
     def read_config(self, path) -> Dict[str, str]:
         """Read field values from previous run if they exist."""
