@@ -1,8 +1,6 @@
 """SDA Uploader GUI."""
 
-import os
 import sys
-import stat
 import json
 import getpass
 import secrets
@@ -14,6 +12,8 @@ from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.scrolledtext import ScrolledText
 from functools import partial
 from platform import system
+from os import chmod
+from stat import S_IRWXU
 
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
@@ -352,7 +352,7 @@ class GUI:
         with open(self.config_file, "w") as f:
             f.write(json.dumps(data))
         # Set file to be readable and writable
-        os.chmod(self.config_file, stat.S_IRWXU)
+        chmod(self.config_file, S_IRWXU)
 
     def read_config(self, path) -> Dict[str, str]:
         """Read field values from previous run if they exist."""
