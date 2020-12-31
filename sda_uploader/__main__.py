@@ -4,7 +4,7 @@ from .gui import GUI
 import tkinter as tk
 
 
-def main():
+def main() -> None:
     """Run Program."""
     root = tk.Tk()
     GUI(root)
