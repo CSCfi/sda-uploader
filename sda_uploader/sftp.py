@@ -12,9 +12,7 @@ def _sftp_connection(
 ) -> Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
-    print(
-        f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT'
-    )
+    print(f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT')
     # Test if key is RSA
     client = paramiko.SSHClient()
     try:

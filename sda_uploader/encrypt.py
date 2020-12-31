@@ -6,9 +6,7 @@ from typing import Union
 from pathlib import Path
 
 
-def encrypt_file(
-    file: Union[str, Path] = "", private_key_file: Union[str, Path] = "", recipient_public_key: Union[str, Path] = ""
-) -> None:
+def encrypt_file(file: Union[str, Path] = "", private_key_file: Union[str, Path] = "", recipient_public_key: Union[str, Path] = "") -> None:
     """Encrypt a file with Crypt4GH."""
     print(f"Encrypting {file} as {file}.c4gh")
     original_file = open(file, "rb")

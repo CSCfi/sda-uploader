@@ -38,9 +38,7 @@ def generate_one_time_key() -> Tuple:
     return private_key_file, public_key_file, random_password
 
 
-def load_encryption_keys(
-    private_key_file: Union[str, Path] = "", private_key_password: str = None, public_key_file: Union[str, Path] = ""
-) -> Tuple:
+def load_encryption_keys(private_key_file: Union[str, Path] = "", private_key_password: str = None, public_key_file: Union[str, Path] = "") -> Tuple:
     """Load encryption keys."""
     private_key = ""
     if private_key_file:
@@ -62,9 +60,7 @@ def load_encryption_keys(
                 # No existing temp keys were found, which is kinda weird
                 pass
         except Exception:
-            sys.exit(
-                f"Incorrect password for {private_key}. This is likely a bug."
-            )  # generated password, should not fail
+            sys.exit(f"Incorrect password for {private_key}. This is likely a bug.")  # generated password, should not fail
     public_key = get_public_key(public_key_file)
     return private_key, public_key
 
@@ -110,9 +106,7 @@ def process_arguments(args: argparse.Namespace) -> argparse.Namespace:
 
     # User confirmation before uploading
     if not args.overwrite:
-        user_confirmation = str(
-            input("Existing files and directories will be overwritten, do you want to continue? [y/N] ") or "n"  # nosec
-        ).lower()
+        user_confirmation = str(input("Existing files and directories will be overwritten, do you want to continue? [y/N] ") or "n").lower()  # nosec
         if not user_confirmation == "y":
             sys.exit("Program aborted.")
 
@@ -155,9 +149,7 @@ def parse_arguments(arguments: Union[Sequence, None]) -> argparse.Namespace:
         "--private_key_password",
         help="Password for Crypt4GH sender private key. If not set, a password will be prompted if using an existing encryption key.",
     )
-    parser.add_argument(
-        "-pub", "--public_key", default=None, help="Crypt4GH recipient public key. Required for encryption."
-    )
+    parser.add_argument("-pub", "--public_key", default=None, help="Crypt4GH recipient public key. Required for encryption.")
     parser.add_argument("-v", "--version", action="version", version=cli_version, help="Display program version.")
     if len(sys.argv) <= 1:
         # If no command line arguments were given, print help text
@@ -189,9 +181,7 @@ def main(arguments: Sequence = None) -> None:
         sys.exit("SFTP authentication failed.")
 
     # Get SFTP client
-    sftp_client = _sftp_client(
-        username=cli_args.username, hostname=cli_args.hostname, port=cli_args.port, sftp_auth=sftp_auth
-    )
+    sftp_client = _sftp_client(username=cli_args.username, hostname=cli_args.hostname, port=cli_args.port, sftp_auth=sftp_auth)
 
     # Load Crypt4GH key-files
     private_key, public_key = load_encryption_keys(
@@ -213,9 +203,7 @@ def main(arguments: Sequence = None) -> None:
 
     # If target is a directory, handle directory upload case
     if Path(cli_args.target).is_dir():
-        _sftp_upload_directory(
-            sftp=sftp_client, directory=cli_args.target, private_key=private_key, public_key=public_key
-        )
+        _sftp_upload_directory(sftp=sftp_client, directory=cli_args.target, private_key=private_key, public_key=public_key)
 
     print("Program finished.")
 

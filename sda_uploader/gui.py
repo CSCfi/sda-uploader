@@ -168,9 +168,7 @@ class GUI:
 
         self.remember_pass = tk.IntVar()
         self.passwords = {"private_key": "", "sftp_key": ""}
-        self.remember_password = tk.Checkbutton(
-            window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0
-        )
+        self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
         self.remember_password.grid(column=1, row=10, sticky=tk.E)
 
     def print_redirect(self, message: str) -> None:
@@ -366,9 +364,7 @@ class GUI:
         self, username: str = None, hostname: str = None, port: int = 22, sftp_key: str = None, sftp_pass: str = None
     ) -> Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
         """Test SFTP connection and determine key type before uploading."""
-        sftp_auth = _sftp_connection(
-            username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass
-        )
+        sftp_auth = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
         self.write_config()  # save fields
         return sftp_auth
 
