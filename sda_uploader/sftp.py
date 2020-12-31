@@ -1,3 +1,5 @@
+"""Module for handling SFTP operations."""
+
 import paramiko
 import os
 from .encrypt import encrypt_file, verify_crypt4gh_header
