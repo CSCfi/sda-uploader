@@ -4,13 +4,16 @@ import paramiko
 import os
 from .encrypt import encrypt_file, verify_crypt4gh_header
 from pathlib import Path
+from typing import Union
 
 
-def _sftp_connection(username=None, hostname=None, port=22, sftp_key=None, sftp_pass=None):
+def _sftp_connection(
+    username: str = None, hostname: str = None, port: int = 22, sftp_key: str = None, sftp_pass: str = None
+) -> Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
     print(
-        f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. You can change this with environment variable $SFTP_TIMEOUT'
+        f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT'
     )
     # Test if key is RSA
     client = paramiko.SSHClient()
@@ -75,7 +78,13 @@ def _sftp_connection(username=None, hostname=None, port=22, sftp_key=None, sftp_
     return False  # neither keys or password worked
 
 
-def _sftp_upload_file(sftp=None, source=None, destination=None, private_key=None, public_key=None):
+def _sftp_upload_file(
+    sftp: paramiko.SFTPClient,
+    source: Union[str, Path] = "",
+    destination: Union[str, Path] = "",
+    private_key: Union[str, Path] = "",
+    public_key: Union[str, Path] = "",
+) -> None:
     """Upload a single file."""
     verified = verify_crypt4gh_header(source)
     if verified:
@@ -95,9 +104,14 @@ def _sftp_upload_file(sftp=None, source=None, destination=None, private_key=None
         print(f"{source}.c4gh removed")
 
 
-def _sftp_upload_directory(sftp=None, directory=None, private_key=None, public_key=None):
+def _sftp_upload_directory(
+    sftp: paramiko.SFTPClient,
+    directory: Union[str, Path] = "",
+    private_key: Union[str, Path] = "",
+    public_key: Union[str, Path] = "",
+) -> None:
     """Upload directory."""
-    sftp_dir = ""
+    sftp_dir: Union[str, Path] = ""
     for item in os.walk(directory):
         sftp_dir = Path(sftp_dir).joinpath(Path(item[0]).name)
         try:
@@ -115,7 +129,12 @@ def _sftp_upload_directory(sftp=None, directory=None, private_key=None, public_k
             )
 
 
-def _sftp_client(username=None, hostname=None, port=22, sftp_auth=None):
+def _sftp_client(
+    username: str = None,
+    hostname: str = "",
+    port: int = 22,
+    sftp_auth: Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool] = "",
+) -> Union[bool, paramiko.SFTPClient]:
     """SFTP client."""
     try:
         print(f"Connecting to {hostname} as {username}.")

@@ -2,8 +2,13 @@
 
 from crypt4gh.lib import encrypt
 
+from typing import Union
+from pathlib import Path
 
-def encrypt_file(file=None, private_key_file=None, recipient_public_key=None):
+
+def encrypt_file(
+    file: Union[str, Path] = "", private_key_file: Union[str, Path] = "", recipient_public_key: Union[str, Path] = ""
+) -> None:
     """Encrypt a file with Crypt4GH."""
     print(f"Encrypting {file} as {file}.c4gh")
     original_file = open(file, "rb")
@@ -14,7 +19,7 @@ def encrypt_file(file=None, private_key_file=None, recipient_public_key=None):
     print("Encryption has finished.")
 
 
-def verify_crypt4gh_header(file=None):
+def verify_crypt4gh_header(file: Union[str, Path] = "") -> bool:
     """Verify, that a file has Crypt4GH header."""
     print("Verifying file Crypt4GH header.")
     with open(file, "rb") as f:
