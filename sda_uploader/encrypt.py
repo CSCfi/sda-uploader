@@ -1,4 +1,4 @@
-"""Encrypte file using crypt4gh."""
+"""Encrypt file using crypt4gh."""
 
 from crypt4gh.lib import encrypt
 
