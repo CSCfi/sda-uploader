@@ -1,3 +1,5 @@
+"""SDA sftp Uploader Application with both GUI and CLI interfaces."""
+
 from setuptools import setup
 from sda_uploader import __version__
 
@@ -13,7 +15,7 @@ setup(
     entry_points={"console_scripts": ["sdagui=sda_uploader.__main__:main", "sdacli=sda_uploader.cli:main"]},
     platforms="any",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: Apache Software License",
