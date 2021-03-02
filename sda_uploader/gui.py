@@ -53,16 +53,6 @@ class GUI:
 
         # 1st column FIELDS AND LABELS
 
-        self.my_key_label = tk.Label(window, text="My Private Key (Optional)")
-        self.my_key_label.grid(column=0, row=0, sticky=tk.W)
-        self.my_key_value = tk.StringVar()
-        self.my_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.my_key_value)
-        self.my_key_field.grid(column=0, row=1, sticky=tk.W)
-        self.my_key_field.config(state="disabled")
-        private_key_file = data.get("private_key_file", None)
-        if private_key_file and Path(private_key_file).is_file():
-            self.my_key_value.set(private_key_file)
-
         self.their_key_label = tk.Label(window, text="*Recipient Public Key")
         self.their_key_label.grid(column=0, row=2, sticky=tk.W)
         self.their_key_value = tk.StringVar()
@@ -120,22 +110,6 @@ class GUI:
 
         # 2nd column BUTTONS
 
-        self.generate_keys_button = tk.Button(
-            window,
-            text="Generate Keys",
-            width=OS_CONFIG["config_button_width"],
-            command=partial(self.password_prompt, "generate"),
-        )
-        self.generate_keys_button.grid(column=1, row=0, sticky=tk.E, columnspan=2)
-
-        self.load_my_key_button = tk.Button(
-            window,
-            text="Load My Private Key",
-            width=OS_CONFIG["config_button_width"],
-            command=partial(self.open_file, "private"),
-        )
-        self.load_my_key_button.grid(column=1, row=1, sticky=tk.E, columnspan=2)
-
         self.load_their_key_button = tk.Button(
             window,
             text="Load Recipient Public Key",
@@ -192,10 +166,7 @@ class GUI:
 
     def open_file(self, action: str) -> None:
         """Open file and return result according to type."""
-        if action == "private":
-            private_key_path = askopenfilename()
-            self.my_key_value.set(private_key_path)
-        elif action == "public":
+        if action == "public":
             public_key_path = askopenfilename()
             self.their_key_value.set(public_key_path)
         elif action == "file":
@@ -246,10 +217,10 @@ class GUI:
         print(f"Private key: {getpass.getuser()}_crypt4gh.key")
         print(f"Public key: {getpass.getuser()}_crypt4gh.pub")
 
-    def _get_private_key(self, password: str) -> None:
-        private_key = None
+    def _do_upload(self, private_key: str, password: str) -> None:
+        private_key = ""
         try:
-            private_key = get_private_key(self.my_key_value.get(), partial(self.mock_callback, password))
+            private_key = get_private_key(private_key, partial(self.mock_callback, password))
         except Exception:
             self.passwords["private_key"] = ""
             print("Incorrect private key passphrase")
@@ -272,7 +243,7 @@ class GUI:
             sftp_port = int(sftp_server[1])
         except (ValueError, IndexError):
             sftp_hostname = self.sftp_server_value.get()
-        sftp_auth = self.test_sftp_connection(
+        sftp_key = self.test_sftp_connection(
             username=sftp_username,
             hostname=sftp_hostname,
             port=sftp_port,
@@ -280,12 +251,12 @@ class GUI:
             sftp_pass=sftp_password,
         )
         # Encrypt and upload
-        if private_key and sftp_auth:
+        if private_key and sftp_key:
             sftp = _sftp_client(
                 username=sftp_username,
                 hostname=sftp_hostname,
                 port=sftp_port,
-                sftp_auth=sftp_auth,
+                sftp_auth=sftp_key,
             )
             if sftp:
                 # This code block will always execute and is only here to satisfy mypy tests
@@ -295,28 +266,13 @@ class GUI:
             print("Could not form SFTP connection.")
 
     def _get_encryption_password(self) -> None:
-        password = ""
-        # Check that all fields are filled before asking for password
-        if self.my_key_value.get() and self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
-            # Ask for passphrase for private key encryption
-            password = self.passwords["private_key"]
-            while len(password) == 0:
-                password = askstring("Private Key Passphrase", "Passphrase for PRIVATE KEY", show="*")
-                if self.remember_pass.get():
-                    self.passwords["private_key"] = password
-                # This if-clause is for preventing error messages
-                if password is None:
-                    return
-            self._get_private_key(password)
-        elif self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
+        if self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Generate random encryption key
             temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
             # Set private key value
-            self.my_key_value.set(temp_private_key)
             # Encrypt and upload
-            self._get_private_key(temp_password)
+            self._do_upload(temp_private_key, temp_password)
             # Remove temp keys
-            self.my_key_value.set("")
             self._remove_file(temp_private_key)
             self._remove_file(temp_public_key)
         else:
@@ -359,7 +315,6 @@ class GUI:
     def write_config(self) -> None:
         """Save field values for re-runs."""
         data = {
-            "private_key_file": self.my_key_value.get(),
             "public_key_file": self.their_key_value.get(),
             "sftp_username": self.sftp_username_value.get(),
             "sftp_server": self.sftp_server_value.get(),
@@ -380,11 +335,11 @@ class GUI:
 
     def test_sftp_connection(
         self, username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
-    ) -> Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
+    ) -> Union[paramiko.PKey, None]:
         """Test SFTP connection and determine key type before uploading."""
-        sftp_auth = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
+        _key = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
         self.write_config()  # save fields
-        return sftp_auth
+        return _key
 
     def sftp_upload(
         self,

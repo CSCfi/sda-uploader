@@ -7,9 +7,7 @@ from pathlib import Path
 from typing import Union, Optional
 
 
-def _sftp_connection(
-    username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
-) -> Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
+def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = "") -> Union[paramiko.PKey, None]:
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
     print(f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT')
@@ -54,26 +52,7 @@ def _sftp_connection(
         print(f"SFTP Error: {e}")
     finally:
         client.close()
-    # Authenticating with password, if key is not set
-    try:
-        print("Testing if SFTP auth scheme is username+password")
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(
-            hostname,
-            allow_agent=False,
-            look_for_keys=False,
-            port=port,
-            timeout=int(os.environ.get("SFTP_TIMEOUT", 5)),
-            username=username,
-            password=sftp_pass,
-        )
-        print("SFTP test connection: OK")
-        return sftp_pass
-    except Exception as e:
-        print(f"SFTP Error: {e}")
-    finally:
-        client.close()
-    return False  # neither keys or password worked
+    return None
 
 
 def _sftp_upload_file(
@@ -131,18 +110,13 @@ def _sftp_client(
     username: str = "",
     hostname: str = "",
     port: int = 22,
-    sftp_auth: Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool] = "",
+    sftp_auth: paramiko.PKey = None,
 ) -> Optional[paramiko.SFTPClient]:
     """SFTP client."""
     try:
         print(f"Connecting to {hostname} as {username}.")
         transport = paramiko.Transport((hostname, int(port)))
-        if type(sftp_auth) in [paramiko.rsakey.RSAKey, paramiko.ed25519key.Ed25519Key]:
-            # If SFTP key is set, authenticate with that
-            transport.connect(username=username, pkey=sftp_auth)
-        else:
-            # If key is not set, authenticate with password
-            transport.connect(username=username, password=sftp_auth)
+        transport.connect(username=username, pkey=sftp_auth)
         sftp = paramiko.SFTPClient.from_transport(transport)
         print("SFTP connected, ready to upload files.")
         return sftp
