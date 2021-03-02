@@ -80,31 +80,42 @@ class GUI:
         self.file_field.grid(column=0, row=5, sticky=tk.W)
         self.file_field.config(state="disabled")
 
-        self.sftp_label = tk.Label(window, text="*SFTP Credentials")
-        self.sftp_label.grid(column=0, row=6, sticky=tk.W)
-        self.sftp_value = tk.StringVar()
-        placeholder_sftp_value = "username@server:22"
-        self.sftp_value.set(placeholder_sftp_value)
-        self.sftp_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_value)
-        self.sftp_field.grid(column=0, row=7, sticky=tk.W)
-        sftp_credentials = data.get("sftp_credentials", None)
-        if sftp_credentials and len(sftp_credentials) > 0:
-            self.sftp_value.set(sftp_credentials)
+        self.sftp_username_label = tk.Label(window, text="*SFTP Username")
+        self.sftp_username_label.grid(column=0, row=6, sticky=tk.W)
+        self.sftp_username_value = tk.StringVar()
+        placeholder_sftp_username_value = "user@institution.org"
+        self.sftp_username_value.set(placeholder_sftp_username_value)
+        self.sftp_username_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_username_value)
+        self.sftp_username_field.grid(column=0, row=7, sticky=tk.W)
+        sftp_username = data.get("sftp_username", None)
+        if sftp_username and len(sftp_username) > 0:
+            self.sftp_username_value.set(sftp_username)
+
+        self.sftp_server_label = tk.Label(window, text="*SFTP Server")
+        self.sftp_server_label.grid(column=0, row=8, sticky=tk.W)
+        self.sftp_server_value = tk.StringVar()
+        placeholder_sftp_server_value = "server.org:22"
+        self.sftp_server_value.set(placeholder_sftp_server_value)
+        self.sftp_server_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_server_value)
+        self.sftp_server_field.grid(column=0, row=9, sticky=tk.W)
+        sftp_server_credentials = data.get("sftp_server", None)
+        if sftp_server_credentials and len(sftp_server_credentials) > 0:
+            self.sftp_server_value.set(sftp_server_credentials)
 
         self.sftp_key_label = tk.Label(window, text="SFTP Key (Optional)")
-        self.sftp_key_label.grid(column=0, row=8, sticky=tk.W)
+        self.sftp_key_label.grid(column=0, row=10, sticky=tk.W)
         self.sftp_key_value = tk.StringVar()
         self.sftp_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_key_value)
-        self.sftp_key_field.grid(column=0, row=9, sticky=tk.W)
+        self.sftp_key_field.grid(column=0, row=11, sticky=tk.W)
         self.sftp_key_field.config(state="disabled")
         sftp_key_file = data.get("sftp_key_file", None)
         if sftp_key_file and Path(sftp_key_file).is_file():
             self.sftp_key_value.set(sftp_key_file)
 
         self.activity_label = tk.Label(window, text="Activity Log")
-        self.activity_label.grid(column=0, row=10, sticky=tk.W)
+        self.activity_label.grid(column=0, row=12, sticky=tk.W)
         self.activity_field = ScrolledText(window, height=12)
-        self.activity_field.grid(column=0, row=11, columnspan=3, sticky=tk.W)
+        self.activity_field.grid(column=0, row=13, columnspan=3, sticky=tk.W)
         self.activity_field.config(state="disabled")
 
         # 2nd column BUTTONS
@@ -164,12 +175,12 @@ class GUI:
             height=3,
             command=partial(self.password_prompt, "encrypt"),
         )
-        self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
+        self.encrypt_button.grid(column=1, row=9, sticky=tk.E, columnspan=2, rowspan=3)
 
         self.remember_pass = tk.IntVar()
         self.passwords = {"private_key": "", "sftp_key": ""}
         self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
-        self.remember_password.grid(column=1, row=10, sticky=tk.E)
+        self.remember_password.grid(column=1, row=12, sticky=tk.E)
 
     def print_redirect(self, message: str) -> None:
         """Print to activity log widget instead of console."""
@@ -253,10 +264,14 @@ class GUI:
             if sftp_password is None:
                 return
         # Test SFTP connection
-        sftp_credentials = self.sftp_value.get().split("@")
-        sftp_username = sftp_credentials[0]
-        sftp_hostname = sftp_credentials[1].split(":")[0]
-        sftp_port = int(sftp_credentials[1].split(":")[1])
+        sftp_username = self.sftp_username_value.get()
+        sftp_hostname, sftp_port = "", 22
+        try:
+            sftp_server = self.sftp_server_value.get().split(":")
+            sftp_hostname = sftp_server[0]
+            sftp_port = int(sftp_server[1])
+        except (ValueError, IndexError):
+            sftp_hostname = self.sftp_server_value.get()
         sftp_auth = self.test_sftp_connection(
             username=sftp_username,
             hostname=sftp_hostname,
@@ -280,7 +295,7 @@ class GUI:
     def _get_encryption_password(self) -> None:
         password = ""
         # Check that all fields are filled before asking for password
-        if self.my_key_value.get() and self.their_key_value.get() and self.file_value.get() and self.sftp_value.get():
+        if self.my_key_value.get() and self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Ask for passphrase for private key encryption
             password = self.passwords["private_key"]
             while len(password) == 0:
@@ -291,7 +306,7 @@ class GUI:
                 if password is None:
                     return
             self._get_private_key(password)
-        elif self.their_key_value.get() and self.file_value.get() and self.sftp_value.get():
+        elif self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Generate random encryption key
             temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
             # Set private key value
@@ -344,7 +359,8 @@ class GUI:
         data = {
             "private_key_file": self.my_key_value.get(),
             "public_key_file": self.their_key_value.get(),
-            "sftp_credentials": self.sftp_value.get(),
+            "sftp_username": self.sftp_username_value.get(),
+            "sftp_server": self.sftp_server_value.get(),
             "sftp_key_file": self.sftp_key_value.get(),
         }
         with open(self.config_file, "w") as f:
