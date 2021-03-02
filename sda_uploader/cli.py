@@ -182,6 +182,9 @@ def main(arguments: Sequence = None) -> None:
 
     # Get SFTP client
     sftp_client = _sftp_client(username=cli_args.username, hostname=cli_args.hostname, port=cli_args.port, sftp_auth=sftp_auth)
+    if sftp_client is None:
+        # This code block will likely never execute and is only to satisfy mypy tests
+        sys.exit("Could not form SFTP client connection.")
 
     # Load Crypt4GH key-files
     private_key, public_key = load_encryption_keys(

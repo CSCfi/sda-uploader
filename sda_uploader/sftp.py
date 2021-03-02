@@ -4,12 +4,12 @@ import paramiko
 import os
 from .encrypt import encrypt_file, verify_crypt4gh_header
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 
 def _sftp_connection(
-    username: str = None, hostname: str = None, port: int = 22, sftp_key: str = None, sftp_pass: str = None
-) -> Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
+    username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
+) -> Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
     print(f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT')
@@ -88,7 +88,7 @@ def _sftp_upload_file(
     if verified:
         print(f"File {source} was recognised as a Crypt4GH file, and will be uploaded.")
         print(f"Uploading {source}")
-        sftp.put(source, destination)
+        sftp.put(str(source), str(destination))
         print(f"{source} has been uploaded.")
     else:
         # Encrypt before uploading
@@ -128,11 +128,11 @@ def _sftp_upload_directory(
 
 
 def _sftp_client(
-    username: str = None,
+    username: str = "",
     hostname: str = "",
     port: int = 22,
-    sftp_auth: Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool] = "",
-) -> Union[bool, paramiko.SFTPClient]:
+    sftp_auth: Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool] = "",
+) -> Optional[paramiko.SFTPClient]:
     """SFTP client."""
     try:
         print(f"Connecting to {hostname} as {username}.")
@@ -158,4 +158,4 @@ def _sftp_client(
     except Exception as e:
         print(f"SFTP Error: {e}")
 
-    return False
+    return None

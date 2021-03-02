@@ -287,8 +287,10 @@ class GUI:
                 port=sftp_port,
                 sftp_auth=sftp_auth,
             )
-            public_key = get_public_key(self.their_key_value.get())
-            self.sftp_upload(sftp=sftp, target=self.file_value.get(), private_key=private_key, public_key=public_key)
+            if sftp:
+                # This code block will always execute and is only here to satisfy mypy tests
+                public_key = get_public_key(self.their_key_value.get())
+                self.sftp_upload(sftp=sftp, target=self.file_value.get(), private_key=private_key, public_key=public_key)
         else:
             print("Could not form SFTP connection.")
 
@@ -377,8 +379,8 @@ class GUI:
         return data
 
     def test_sftp_connection(
-        self, username: str = None, hostname: str = None, port: int = 22, sftp_key: str = None, sftp_pass: str = None
-    ) -> Union[paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
+        self, username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
+    ) -> Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
         """Test SFTP connection and determine key type before uploading."""
         sftp_auth = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
         self.write_config()  # save fields
