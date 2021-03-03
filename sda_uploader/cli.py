@@ -169,7 +169,7 @@ def main(arguments: Sequence = None) -> None:
     cli_args = process_arguments(cli_args)
 
     # Determine authentication type and test connection
-    sftp_auth = _sftp_connection(
+    sftp_key = _sftp_connection(
         username=cli_args.username,
         hostname=cli_args.hostname,
         port=cli_args.port,
@@ -177,11 +177,14 @@ def main(arguments: Sequence = None) -> None:
         sftp_pass=cli_args.identity_file_password or cli_args.user_password,
     )
 
-    if not sftp_auth:
+    if not sftp_key:
         sys.exit("SFTP authentication failed.")
 
     # Get SFTP client
-    sftp_client = _sftp_client(username=cli_args.username, hostname=cli_args.hostname, port=cli_args.port, sftp_auth=sftp_auth)
+    sftp_client = _sftp_client(username=cli_args.username, hostname=cli_args.hostname, port=cli_args.port, sftp_auth=sftp_key)
+    if sftp_client is None:
+        # This code block will likely never execute and is only to satisfy mypy tests
+        sys.exit("Could not form SFTP client connection.")
 
     # Load Crypt4GH key-files
     private_key, public_key = load_encryption_keys(
