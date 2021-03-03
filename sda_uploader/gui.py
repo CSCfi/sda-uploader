@@ -152,7 +152,7 @@ class GUI:
         self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
         self.remember_pass = tk.IntVar()
-        self.passwords = {"private_key": "", "sftp_key": ""}
+        self.passwords = {"sftp_key": ""}
         self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
         self.remember_password.grid(column=1, row=10, sticky=tk.E)
 
@@ -193,7 +193,6 @@ class GUI:
         try:
             private_key = get_private_key(private_key, partial(self.mock_callback, password))
         except Exception:
-            self.passwords["private_key"] = ""
             print("Incorrect private key passphrase")
             return
         # Ask for RSA key password
@@ -260,7 +259,6 @@ class GUI:
     def _generate_one_time_key(self) -> Tuple:
         """Generate one time Crypt4GH encryption key."""
         random_password = secrets.token_hex(16)
-        self.passwords["private_key"] = random_password
         private_key_file = f"{getpass.getuser()}_temporary_crypt4gh.key"
         public_key_file = f"{getpass.getuser()}_temporary_crypt4gh.pub"
         # Remove existing temp keys if they exist
