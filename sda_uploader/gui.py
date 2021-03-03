@@ -54,58 +54,58 @@ class GUI:
         # 1st column FIELDS AND LABELS
 
         self.their_key_label = tk.Label(window, text="*Recipient Public Key")
-        self.their_key_label.grid(column=0, row=2, sticky=tk.W)
+        self.their_key_label.grid(column=0, row=0, sticky=tk.W)
         self.their_key_value = tk.StringVar()
         self.their_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.their_key_value)
-        self.their_key_field.grid(column=0, row=3, sticky=tk.W)
+        self.their_key_field.grid(column=0, row=1, sticky=tk.W)
         self.their_key_field.config(state="disabled")
         public_key_file = data.get("public_key_file", None)
         if public_key_file and Path(public_key_file).is_file():
             self.their_key_value.set(public_key_file)
 
         self.file_label = tk.Label(window, text="*File or Directory to Upload")
-        self.file_label.grid(column=0, row=4, sticky=tk.W)
+        self.file_label.grid(column=0, row=2, sticky=tk.W)
         self.file_value = tk.StringVar()
         self.file_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.file_value)
-        self.file_field.grid(column=0, row=5, sticky=tk.W)
+        self.file_field.grid(column=0, row=3, sticky=tk.W)
         self.file_field.config(state="disabled")
 
         self.sftp_username_label = tk.Label(window, text="*SFTP Username")
-        self.sftp_username_label.grid(column=0, row=6, sticky=tk.W)
+        self.sftp_username_label.grid(column=0, row=4, sticky=tk.W)
         self.sftp_username_value = tk.StringVar()
         placeholder_sftp_username_value = "user@institution.org"
         self.sftp_username_value.set(placeholder_sftp_username_value)
         self.sftp_username_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_username_value)
-        self.sftp_username_field.grid(column=0, row=7, sticky=tk.W)
+        self.sftp_username_field.grid(column=0, row=5, sticky=tk.W)
         sftp_username = data.get("sftp_username", None)
         if sftp_username and len(sftp_username) > 0:
             self.sftp_username_value.set(sftp_username)
 
         self.sftp_server_label = tk.Label(window, text="*SFTP Server")
-        self.sftp_server_label.grid(column=0, row=8, sticky=tk.W)
+        self.sftp_server_label.grid(column=0, row=6, sticky=tk.W)
         self.sftp_server_value = tk.StringVar()
         placeholder_sftp_server_value = "server.org:22"
         self.sftp_server_value.set(placeholder_sftp_server_value)
         self.sftp_server_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_server_value)
-        self.sftp_server_field.grid(column=0, row=9, sticky=tk.W)
+        self.sftp_server_field.grid(column=0, row=7, sticky=tk.W)
         sftp_server_credentials = data.get("sftp_server", None)
         if sftp_server_credentials and len(sftp_server_credentials) > 0:
             self.sftp_server_value.set(sftp_server_credentials)
 
         self.sftp_key_label = tk.Label(window, text="SFTP Key (Optional)")
-        self.sftp_key_label.grid(column=0, row=10, sticky=tk.W)
+        self.sftp_key_label.grid(column=0, row=8, sticky=tk.W)
         self.sftp_key_value = tk.StringVar()
         self.sftp_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_key_value)
-        self.sftp_key_field.grid(column=0, row=11, sticky=tk.W)
+        self.sftp_key_field.grid(column=0, row=9, sticky=tk.W)
         self.sftp_key_field.config(state="disabled")
         sftp_key_file = data.get("sftp_key_file", None)
         if sftp_key_file and Path(sftp_key_file).is_file():
             self.sftp_key_value.set(sftp_key_file)
 
         self.activity_label = tk.Label(window, text="Activity Log")
-        self.activity_label.grid(column=0, row=12, sticky=tk.W)
+        self.activity_label.grid(column=0, row=10, sticky=tk.W)
         self.activity_field = ScrolledText(window, height=12)
-        self.activity_field.grid(column=0, row=13, columnspan=3, sticky=tk.W)
+        self.activity_field.grid(column=0, row=11, columnspan=3, sticky=tk.W)
         self.activity_field.config(state="disabled")
 
         # 2nd column BUTTONS
@@ -116,7 +116,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "public"),
         )
-        self.load_their_key_button.grid(column=1, row=2, sticky=tk.E, columnspan=2)
+        self.load_their_key_button.grid(column=1, row=0, sticky=tk.E, columnspan=2)
 
         self.select_file_button = tk.Button(
             window,
@@ -124,7 +124,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "file"),
         )
-        self.select_file_button.grid(column=1, row=3, sticky=tk.E, columnspan=2)
+        self.select_file_button.grid(column=1, row=1, sticky=tk.E, columnspan=2)
 
         self.select_directory_button = tk.Button(
             window,
@@ -132,7 +132,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "directory"),
         )
-        self.select_directory_button.grid(column=1, row=4, sticky=tk.E, columnspan=2)
+        self.select_directory_button.grid(column=1, row=2, sticky=tk.E, columnspan=2)
 
         self.load_sftp_key_button = tk.Button(
             window,
@@ -140,7 +140,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "sftp_key"),
         )
-        self.load_sftp_key_button.grid(column=1, row=5, sticky=tk.E, columnspan=2)
+        self.load_sftp_key_button.grid(column=1, row=3, sticky=tk.E, columnspan=2)
 
         self.encrypt_button = tk.Button(
             window,
@@ -149,12 +149,12 @@ class GUI:
             height=3,
             command=partial(self.password_prompt, "encrypt"),
         )
-        self.encrypt_button.grid(column=1, row=9, sticky=tk.E, columnspan=2, rowspan=3)
+        self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
         self.remember_pass = tk.IntVar()
         self.passwords = {"private_key": "", "sftp_key": ""}
         self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
-        self.remember_password.grid(column=1, row=12, sticky=tk.E)
+        self.remember_password.grid(column=1, row=10, sticky=tk.E)
 
     def print_redirect(self, message: str) -> None:
         """Print to activity log widget instead of console."""
