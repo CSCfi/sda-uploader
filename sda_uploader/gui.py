@@ -53,7 +53,7 @@ class GUI:
 
         # 1st column FIELDS AND LABELS
 
-        self.their_key_label = tk.Label(window, text="*Recipient Public Key")
+        self.their_key_label = tk.Label(window, text="Recipient Public Key")
         self.their_key_label.grid(column=0, row=0, sticky=tk.W)
         self.their_key_value = tk.StringVar()
         self.their_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.their_key_value)
@@ -63,14 +63,14 @@ class GUI:
         if public_key_file and Path(public_key_file).is_file():
             self.their_key_value.set(public_key_file)
 
-        self.file_label = tk.Label(window, text="*File or Directory to Upload")
+        self.file_label = tk.Label(window, text="File or Directory to Upload")
         self.file_label.grid(column=0, row=2, sticky=tk.W)
         self.file_value = tk.StringVar()
         self.file_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.file_value)
         self.file_field.grid(column=0, row=3, sticky=tk.W)
         self.file_field.config(state="disabled")
 
-        self.sftp_username_label = tk.Label(window, text="*SFTP Username")
+        self.sftp_username_label = tk.Label(window, text="SFTP Username")
         self.sftp_username_label.grid(column=0, row=4, sticky=tk.W)
         self.sftp_username_value = tk.StringVar()
         placeholder_sftp_username_value = "user@institution.org"
@@ -81,7 +81,7 @@ class GUI:
         if sftp_username and len(sftp_username) > 0:
             self.sftp_username_value.set(sftp_username)
 
-        self.sftp_server_label = tk.Label(window, text="*SFTP Server")
+        self.sftp_server_label = tk.Label(window, text="SFTP Server")
         self.sftp_server_label.grid(column=0, row=6, sticky=tk.W)
         self.sftp_server_value = tk.StringVar()
         placeholder_sftp_server_value = "server.org:22"
@@ -92,7 +92,7 @@ class GUI:
         if sftp_server_credentials and len(sftp_server_credentials) > 0:
             self.sftp_server_value.set(sftp_server_credentials)
 
-        self.sftp_key_label = tk.Label(window, text="SFTP Key (Optional)")
+        self.sftp_key_label = tk.Label(window, text="SFTP Key")
         self.sftp_key_label.grid(column=0, row=8, sticky=tk.W)
         self.sftp_key_value = tk.StringVar()
         self.sftp_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_key_value)
@@ -198,7 +198,7 @@ class GUI:
         # Ask for RSA key password
         sftp_password = self.passwords["sftp_key"]
         while len(sftp_password) == 0:
-            sftp_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY or USERNAME", show="*")
+            sftp_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY", show="*")
             if self.remember_pass.get():
                 self.passwords["sftp_key"] = sftp_password
             # This if-clause is for preventing error messages
@@ -245,7 +245,7 @@ class GUI:
             self._remove_file(temp_private_key)
             self._remove_file(temp_public_key)
         else:
-            print("Fields marked with * must be filled")
+            print("All fields must be filled")
 
     def _remove_file(self, filepath: str) -> None:
         """Remove temp files."""

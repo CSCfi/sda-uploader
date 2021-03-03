@@ -12,9 +12,9 @@ def main() -> None:
     print("1. Load your recipient's public key")
     print("2. Select a file or a directory for upload (not both)")
     print("3. Write SFTP username, server and port to SFTP Credentials")
-    print("4. Load your SFTP identity key (optional) or leave empty to use SFTP password")
+    print("4. Load your SFTP identity key")
     print("5. Click [Encrypt and Upload File(s)] to upload selected file or directory")
-    print("6. Password for private key (if set) and SFTP authentication will be prompted\n")
+    print("6. Password for SFTP authentication will be prompted\n")
     root.mainloop()
 
 

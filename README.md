@@ -2,18 +2,17 @@
 SDA Uploader is a tool for encrypting and uploading files. Files are encrypted with [Crypt4GH](http://samtools.github.io/hts-specs/crypt4gh.pdf) and uploaded with [SFTP](https://www.ssh.com/ssh/sftp/).
 
 ## GUI Demo
-[![Demo Video](https://kannu.csc.fi/s/Z5wnNDPFfgR5583/preview)](https://kannu.csc.fi/s/DiD4Bicx8zwd4Gf)
+[![Demo Video](https://kannu.csc.fi/s/qX4PbXDDgmeBss2/preview)](https://kannu.csc.fi/s/ER4SMQWECZwnqt5)
 
 Click on the picture above to view the GUI demo video
 
 Current features:
-- Generation of key pair
 - Encryption of file(s)
 - Direct uploading of encrypted file(s)
 - Upload single files or whole directories
 - Filled fields will be saved for later re-use
 - Option to save password for session if encrypting and uploading multiple objects
-- Supports RSA and Ed25519 keys or username+password for SFTP authentication
+- Supports RSA and Ed25519 keys for SFTP authentication
 
 ### GUI Config
 Saved fields are kept in `.sda_uploader_config.json` in the user's home directory.
