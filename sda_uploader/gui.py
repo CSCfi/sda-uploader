@@ -147,7 +147,7 @@ class GUI:
             text="Encrypt and Upload File(s)",
             width=OS_CONFIG["config_button_width"],
             height=3,
-            command=partial(self.password_prompt, "encrypt"),
+            command=partial(self._start_process),
         )
         self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
@@ -189,36 +189,7 @@ class GUI:
         else:
             print(f"Unknown action: {action}")
 
-    def _generate_password(self) -> None:
-        password1 = password2 = ""
-        # Passphrase for private key generation
-        password1 = askstring("Private Key Passphrase", "Private Key Passphrase", show="*")
-        # This if-clause is for preventing error messages
-        if password1 is None:
-            return
-        password2 = askstring("Private Key Passphrase", "Re-type Private Key Passphrase to Confirm", show="*")
-        if password2 is None:
-            return
-        if password1 != password2:
-            print("Passwords don't match")
-            return
-        while len(password1) == 0:
-            password1 = askstring("Private Key Passphrase", "Passphrase can't be empty", show="*")
-            # This if-clause is for preventing error messages
-            if password1 is None:
-                return
-        # Use crypt4gh module to generate private and public keys
-        c4gh.generate(
-            f"{getpass.getuser()}_crypt4gh.key",
-            f"{getpass.getuser()}_crypt4gh.pub",
-            callback=partial(self.mock_callback, password1),
-        )
-        print("Key pair has been generated, your private key will be auto-loaded the next time you launch this tool")
-        print(f"Private key: {getpass.getuser()}_crypt4gh.key")
-        print(f"Public key: {getpass.getuser()}_crypt4gh.pub")
-
     def _do_upload(self, private_key: str, password: str) -> None:
-        private_key = ""
         try:
             private_key = get_private_key(private_key, partial(self.mock_callback, password))
         except Exception:
@@ -265,11 +236,10 @@ class GUI:
         else:
             print("Could not form SFTP connection.")
 
-    def _get_encryption_password(self) -> None:
+    def _start_process(self) -> None:
         if self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Generate random encryption key
             temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
-            # Set private key value
             # Encrypt and upload
             self._do_upload(temp_private_key, temp_password)
             # Remove temp keys
@@ -290,6 +260,7 @@ class GUI:
     def _generate_one_time_key(self) -> Tuple:
         """Generate one time Crypt4GH encryption key."""
         random_password = secrets.token_hex(16)
+        self.passwords["private_key"] = random_password
         private_key_file = f"{getpass.getuser()}_temporary_crypt4gh.key"
         public_key_file = f"{getpass.getuser()}_temporary_crypt4gh.pub"
         # Remove existing temp keys if they exist
@@ -298,15 +269,6 @@ class GUI:
         c4gh.generate(private_key_file, public_key_file, callback=partial(self.mock_callback, random_password))
         print("One-time use encryption key generated")
         return private_key_file, public_key_file, random_password
-
-    def password_prompt(self, action: str) -> None:
-        """Ask user for private key password."""
-        if action == "generate":
-            self._generate_password()
-        elif action == "encrypt":
-            self._get_encryption_password()
-        else:
-            print(f"Unknown action: {action}")
 
     def mock_callback(self, password: str) -> str:
         """Mock callback to return password."""
