@@ -53,88 +53,62 @@ class GUI:
 
         # 1st column FIELDS AND LABELS
 
-        self.my_key_label = tk.Label(window, text="My Private Key (Optional)")
-        self.my_key_label.grid(column=0, row=0, sticky=tk.W)
-        self.my_key_value = tk.StringVar()
-        self.my_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.my_key_value)
-        self.my_key_field.grid(column=0, row=1, sticky=tk.W)
-        self.my_key_field.config(state="disabled")
-        private_key_file = data.get("private_key_file", None)
-        if private_key_file and Path(private_key_file).is_file():
-            self.my_key_value.set(private_key_file)
-
         self.their_key_label = tk.Label(window, text="*Recipient Public Key")
-        self.their_key_label.grid(column=0, row=2, sticky=tk.W)
+        self.their_key_label.grid(column=0, row=0, sticky=tk.W)
         self.their_key_value = tk.StringVar()
         self.their_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.their_key_value)
-        self.their_key_field.grid(column=0, row=3, sticky=tk.W)
+        self.their_key_field.grid(column=0, row=1, sticky=tk.W)
         self.their_key_field.config(state="disabled")
         public_key_file = data.get("public_key_file", None)
         if public_key_file and Path(public_key_file).is_file():
             self.their_key_value.set(public_key_file)
 
         self.file_label = tk.Label(window, text="*File or Directory to Upload")
-        self.file_label.grid(column=0, row=4, sticky=tk.W)
+        self.file_label.grid(column=0, row=2, sticky=tk.W)
         self.file_value = tk.StringVar()
         self.file_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.file_value)
-        self.file_field.grid(column=0, row=5, sticky=tk.W)
+        self.file_field.grid(column=0, row=3, sticky=tk.W)
         self.file_field.config(state="disabled")
 
         self.sftp_username_label = tk.Label(window, text="*SFTP Username")
-        self.sftp_username_label.grid(column=0, row=6, sticky=tk.W)
+        self.sftp_username_label.grid(column=0, row=4, sticky=tk.W)
         self.sftp_username_value = tk.StringVar()
         placeholder_sftp_username_value = "user@institution.org"
         self.sftp_username_value.set(placeholder_sftp_username_value)
         self.sftp_username_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_username_value)
-        self.sftp_username_field.grid(column=0, row=7, sticky=tk.W)
+        self.sftp_username_field.grid(column=0, row=5, sticky=tk.W)
         sftp_username = data.get("sftp_username", None)
         if sftp_username and len(sftp_username) > 0:
             self.sftp_username_value.set(sftp_username)
 
         self.sftp_server_label = tk.Label(window, text="*SFTP Server")
-        self.sftp_server_label.grid(column=0, row=8, sticky=tk.W)
+        self.sftp_server_label.grid(column=0, row=6, sticky=tk.W)
         self.sftp_server_value = tk.StringVar()
         placeholder_sftp_server_value = "server.org:22"
         self.sftp_server_value.set(placeholder_sftp_server_value)
         self.sftp_server_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_server_value)
-        self.sftp_server_field.grid(column=0, row=9, sticky=tk.W)
+        self.sftp_server_field.grid(column=0, row=7, sticky=tk.W)
         sftp_server_credentials = data.get("sftp_server", None)
         if sftp_server_credentials and len(sftp_server_credentials) > 0:
             self.sftp_server_value.set(sftp_server_credentials)
 
         self.sftp_key_label = tk.Label(window, text="SFTP Key (Optional)")
-        self.sftp_key_label.grid(column=0, row=10, sticky=tk.W)
+        self.sftp_key_label.grid(column=0, row=8, sticky=tk.W)
         self.sftp_key_value = tk.StringVar()
         self.sftp_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_key_value)
-        self.sftp_key_field.grid(column=0, row=11, sticky=tk.W)
+        self.sftp_key_field.grid(column=0, row=9, sticky=tk.W)
         self.sftp_key_field.config(state="disabled")
         sftp_key_file = data.get("sftp_key_file", None)
         if sftp_key_file and Path(sftp_key_file).is_file():
             self.sftp_key_value.set(sftp_key_file)
 
         self.activity_label = tk.Label(window, text="Activity Log")
-        self.activity_label.grid(column=0, row=12, sticky=tk.W)
+        self.activity_label.grid(column=0, row=10, sticky=tk.W)
         self.activity_field = ScrolledText(window, height=12)
-        self.activity_field.grid(column=0, row=13, columnspan=3, sticky=tk.W)
+        self.activity_field.grid(column=0, row=11, columnspan=3, sticky=tk.W)
         self.activity_field.config(state="disabled")
 
         # 2nd column BUTTONS
-
-        self.generate_keys_button = tk.Button(
-            window,
-            text="Generate Keys",
-            width=OS_CONFIG["config_button_width"],
-            command=partial(self.password_prompt, "generate"),
-        )
-        self.generate_keys_button.grid(column=1, row=0, sticky=tk.E, columnspan=2)
-
-        self.load_my_key_button = tk.Button(
-            window,
-            text="Load My Private Key",
-            width=OS_CONFIG["config_button_width"],
-            command=partial(self.open_file, "private"),
-        )
-        self.load_my_key_button.grid(column=1, row=1, sticky=tk.E, columnspan=2)
 
         self.load_their_key_button = tk.Button(
             window,
@@ -142,7 +116,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "public"),
         )
-        self.load_their_key_button.grid(column=1, row=2, sticky=tk.E, columnspan=2)
+        self.load_their_key_button.grid(column=1, row=0, sticky=tk.E, columnspan=2)
 
         self.select_file_button = tk.Button(
             window,
@@ -150,7 +124,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "file"),
         )
-        self.select_file_button.grid(column=1, row=3, sticky=tk.E, columnspan=2)
+        self.select_file_button.grid(column=1, row=1, sticky=tk.E, columnspan=2)
 
         self.select_directory_button = tk.Button(
             window,
@@ -158,7 +132,7 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "directory"),
         )
-        self.select_directory_button.grid(column=1, row=4, sticky=tk.E, columnspan=2)
+        self.select_directory_button.grid(column=1, row=2, sticky=tk.E, columnspan=2)
 
         self.load_sftp_key_button = tk.Button(
             window,
@@ -166,21 +140,21 @@ class GUI:
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "sftp_key"),
         )
-        self.load_sftp_key_button.grid(column=1, row=5, sticky=tk.E, columnspan=2)
+        self.load_sftp_key_button.grid(column=1, row=3, sticky=tk.E, columnspan=2)
 
         self.encrypt_button = tk.Button(
             window,
             text="Encrypt and Upload File(s)",
             width=OS_CONFIG["config_button_width"],
             height=3,
-            command=partial(self.password_prompt, "encrypt"),
+            command=partial(self._start_process),
         )
-        self.encrypt_button.grid(column=1, row=9, sticky=tk.E, columnspan=2, rowspan=3)
+        self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
         self.remember_pass = tk.IntVar()
-        self.passwords = {"private_key": "", "sftp_key": ""}
+        self.passwords = {"sftp_key": ""}
         self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
-        self.remember_password.grid(column=1, row=12, sticky=tk.E)
+        self.remember_password.grid(column=1, row=10, sticky=tk.E)
 
     def print_redirect(self, message: str) -> None:
         """Print to activity log widget instead of console."""
@@ -192,10 +166,7 @@ class GUI:
 
     def open_file(self, action: str) -> None:
         """Open file and return result according to type."""
-        if action == "private":
-            private_key_path = askopenfilename()
-            self.my_key_value.set(private_key_path)
-        elif action == "public":
+        if action == "public":
             public_key_path = askopenfilename()
             self.their_key_value.set(public_key_path)
         elif action == "file":
@@ -218,40 +189,10 @@ class GUI:
         else:
             print(f"Unknown action: {action}")
 
-    def _generate_password(self) -> None:
-        password1 = password2 = ""
-        # Passphrase for private key generation
-        password1 = askstring("Private Key Passphrase", "Private Key Passphrase", show="*")
-        # This if-clause is for preventing error messages
-        if password1 is None:
-            return
-        password2 = askstring("Private Key Passphrase", "Re-type Private Key Passphrase to Confirm", show="*")
-        if password2 is None:
-            return
-        if password1 != password2:
-            print("Passwords don't match")
-            return
-        while len(password1) == 0:
-            password1 = askstring("Private Key Passphrase", "Passphrase can't be empty", show="*")
-            # This if-clause is for preventing error messages
-            if password1 is None:
-                return
-        # Use crypt4gh module to generate private and public keys
-        c4gh.generate(
-            f"{getpass.getuser()}_crypt4gh.key",
-            f"{getpass.getuser()}_crypt4gh.pub",
-            callback=partial(self.mock_callback, password1),
-        )
-        print("Key pair has been generated, your private key will be auto-loaded the next time you launch this tool")
-        print(f"Private key: {getpass.getuser()}_crypt4gh.key")
-        print(f"Public key: {getpass.getuser()}_crypt4gh.pub")
-
-    def _get_private_key(self, password: str) -> None:
-        private_key = None
+    def _do_upload(self, private_key: str, password: str) -> None:
         try:
-            private_key = get_private_key(self.my_key_value.get(), partial(self.mock_callback, password))
+            private_key = get_private_key(private_key, partial(self.mock_callback, password))
         except Exception:
-            self.passwords["private_key"] = ""
             print("Incorrect private key passphrase")
             return
         # Ask for RSA key password
@@ -272,7 +213,7 @@ class GUI:
             sftp_port = int(sftp_server[1])
         except (ValueError, IndexError):
             sftp_hostname = self.sftp_server_value.get()
-        sftp_auth = self.test_sftp_connection(
+        sftp_key = self.test_sftp_connection(
             username=sftp_username,
             hostname=sftp_hostname,
             port=sftp_port,
@@ -280,12 +221,12 @@ class GUI:
             sftp_pass=sftp_password,
         )
         # Encrypt and upload
-        if private_key and sftp_auth:
+        if private_key and sftp_key:
             sftp = _sftp_client(
                 username=sftp_username,
                 hostname=sftp_hostname,
                 port=sftp_port,
-                sftp_auth=sftp_auth,
+                sftp_auth=sftp_key,
             )
             if sftp:
                 # This code block will always execute and is only here to satisfy mypy tests
@@ -294,29 +235,13 @@ class GUI:
         else:
             print("Could not form SFTP connection.")
 
-    def _get_encryption_password(self) -> None:
-        password = ""
-        # Check that all fields are filled before asking for password
-        if self.my_key_value.get() and self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
-            # Ask for passphrase for private key encryption
-            password = self.passwords["private_key"]
-            while len(password) == 0:
-                password = askstring("Private Key Passphrase", "Passphrase for PRIVATE KEY", show="*")
-                if self.remember_pass.get():
-                    self.passwords["private_key"] = password
-                # This if-clause is for preventing error messages
-                if password is None:
-                    return
-            self._get_private_key(password)
-        elif self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
+    def _start_process(self) -> None:
+        if self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Generate random encryption key
             temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
-            # Set private key value
-            self.my_key_value.set(temp_private_key)
             # Encrypt and upload
-            self._get_private_key(temp_password)
+            self._do_upload(temp_private_key, temp_password)
             # Remove temp keys
-            self.my_key_value.set("")
             self._remove_file(temp_private_key)
             self._remove_file(temp_public_key)
         else:
@@ -343,15 +268,6 @@ class GUI:
         print("One-time use encryption key generated")
         return private_key_file, public_key_file, random_password
 
-    def password_prompt(self, action: str) -> None:
-        """Ask user for private key password."""
-        if action == "generate":
-            self._generate_password()
-        elif action == "encrypt":
-            self._get_encryption_password()
-        else:
-            print(f"Unknown action: {action}")
-
     def mock_callback(self, password: str) -> str:
         """Mock callback to return password."""
         return password
@@ -359,7 +275,6 @@ class GUI:
     def write_config(self) -> None:
         """Save field values for re-runs."""
         data = {
-            "private_key_file": self.my_key_value.get(),
             "public_key_file": self.their_key_value.get(),
             "sftp_username": self.sftp_username_value.get(),
             "sftp_server": self.sftp_server_value.get(),
@@ -380,11 +295,11 @@ class GUI:
 
     def test_sftp_connection(
         self, username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
-    ) -> Union[paramiko.PKey, paramiko.RSAKey, paramiko.ed25519key.Ed25519Key, str, bool]:
+    ) -> Union[paramiko.PKey, None]:
         """Test SFTP connection and determine key type before uploading."""
-        sftp_auth = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
+        _key = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
         self.write_config()  # save fields
-        return sftp_auth
+        return _key
 
     def sftp_upload(
         self,
