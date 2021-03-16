@@ -16,7 +16,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     try:
         print("Testing if SFTP key is of type RSA")
         paramiko_key = paramiko.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             hostname,
             allow_agent=False,
@@ -36,7 +36,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     try:
         print("Testing if SFTP key is of type Ed25519")
         paramiko_key = paramiko.ed25519key.Ed25519Key(filename=sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             hostname,
             allow_agent=False,
