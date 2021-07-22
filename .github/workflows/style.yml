@@ -1,9 +1,6 @@
 name: Python style check
 
-on:
-  push:
-  schedule:
-    - cron: '0 7 * * 1'
+on: [push]
 
 jobs:
   style_check:

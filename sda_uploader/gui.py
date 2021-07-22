@@ -159,7 +159,7 @@ class GUI:
     def print_redirect(self, message: str) -> None:
         """Print to activity log widget instead of console."""
         self.activity_field.config(state="normal")
-        self.activity_field.insert(tk.END, message, None)
+        self.activity_field.insert(tk.END, message, None)  # type: ignore
         self.activity_field.see(tk.END)
         self.activity_field.config(state="disabled")
         self.window.update()
@@ -264,8 +264,12 @@ class GUI:
         # Remove existing temp keys if they exist
         self._remove_file(private_key_file)
         self._remove_file(public_key_file)
-        c4gh.generate(private_key_file, public_key_file, callback=partial(self.mock_callback, random_password))
-        print("One-time use encryption key generated")
+        try:
+            c4gh.generate(private_key_file, public_key_file, passphrase=str.encode(random_password))
+            print("One-time use encryption key generated")
+        except PermissionError:
+            print("A previous generated key exists under the name private_key_file already exists remove it and try again.")
+
         return private_key_file, public_key_file, random_password
 
     def mock_callback(self, password: str) -> str:
