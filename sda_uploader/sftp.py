@@ -10,20 +10,15 @@ from typing import Union, Optional
 def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = "") -> Union[paramiko.PKey, None]:
     """Test SFTP connection and determine key type before uploading."""
     print("Testing connection to SFTP server.")
-    print(f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT')
+
     # Test if key is RSA
-    client = paramiko.SSHClient()
+    # client = paramiko.SFTPClient()
+    transport = paramiko.Transport((hostname, int(port)))
     paramiko_key: paramiko.PKey
     try:
         print("Testing if SFTP key is of type RSA")
         paramiko_key = paramiko.rsakey.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(
-            hostname,
-            allow_agent=False,
-            look_for_keys=False,
-            port=port,
-            timeout=int(os.environ.get("SFTP_TIMEOUT", 5)),
+        transport.connect(
             username=username,
             pkey=paramiko_key,
         )
@@ -32,18 +27,12 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     except Exception as e:
         print(f"SFTP Error: {e}")
     finally:
-        client.close()
+        transport.close()
     # Test if key is ed25519
     try:
         print("Testing if SFTP key is of type Ed25519")
         paramiko_key = paramiko.ed25519key.Ed25519Key(filename=sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(
-            hostname,
-            allow_agent=False,
-            look_for_keys=False,
-            port=port,
-            timeout=int(os.environ.get("SFTP_TIMEOUT", 5)),
+        transport.connect(
             username=username,
             pkey=paramiko_key,
         )
@@ -52,7 +41,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     except Exception as e:
         print(f"SFTP Error: {e}")
     finally:
-        client.close()
+        transport.close()
     return None
 
 
