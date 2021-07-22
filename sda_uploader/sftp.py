@@ -13,10 +13,11 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     print(f'SFTP testing timeout is: {os.environ.get("SFTP_TIMEOUT", 5)}. This can be change this with environment variable $SFTP_TIMEOUT')
     # Test if key is RSA
     client = paramiko.SSHClient()
+    paramiko_key: paramiko.PKey
     try:
         print("Testing if SFTP key is of type RSA")
-        paramiko_key = paramiko.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
+        paramiko_key = paramiko.rsakey.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname,
             allow_agent=False,
@@ -36,7 +37,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     try:
         print("Testing if SFTP key is of type Ed25519")
         paramiko_key = paramiko.ed25519key.Ed25519Key(filename=sftp_key, password=sftp_pass)
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
             hostname,
             allow_agent=False,
