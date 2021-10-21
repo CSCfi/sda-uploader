@@ -22,7 +22,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          name: Release ${{ github.ref }}
           body: |
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader GUI (Graphical User Interface).
             Release ${{ steps.vars.outputs.tag }} of SDA Uploader CLI (Command Line Interface).
