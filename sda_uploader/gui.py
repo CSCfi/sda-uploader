@@ -253,7 +253,13 @@ class GUI:
             Path(filepath).unlink()
             print(f"Removed temp file {filepath}")
         except FileNotFoundError:
-            print(f"Temp file {filepath} not found")
+            print(f"Deletion of file {filepath} failed")
+            pass
+        except PermissionError:
+            print(f"No permission to delete {filepath}. Please do manual cleanup.")
+            pass
+        except Exception:
+            print(f"Unexpected {Exception}, {type(Exception)}")
             pass
 
     def _generate_one_time_key(self) -> Tuple:
