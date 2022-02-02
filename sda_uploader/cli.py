@@ -30,7 +30,7 @@ def _remove_file(filepath: str) -> None:
         print(f"Deletion of file {filepath} failed")
         pass
     except PermissionError:
-        print(f"Permission to delete of {filepath}. Please do manual cleanup.")
+        print(f"No permission to delete {filepath}. Please do manual cleanup.")
         pass
     except Exception:
         print(f"Unexpected {Exception}, {type(Exception)}")
