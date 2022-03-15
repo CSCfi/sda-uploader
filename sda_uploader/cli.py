@@ -46,7 +46,7 @@ def generate_one_time_key() -> Tuple:
     _remove_file(private_key_file)
     _remove_file(public_key_file)
 
-    c4gh.generate(private_key_file, public_key_file, callback=partial(mock_callback, random_password))
+    c4gh.generate(private_key_file, public_key_file, passphrase=str.encode(random_password))
     print("One-time use encryption key generated.")
     return private_key_file, public_key_file, random_password
 
