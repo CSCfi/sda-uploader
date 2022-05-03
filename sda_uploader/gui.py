@@ -198,12 +198,13 @@ class GUI:
         # Ask for RSA key password
         sftp_password = self.passwords["sftp_key"]
         while len(sftp_password) == 0:
-            sftp_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY", show="*")
+            _prompted_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY", show="*")
+            # This if-clause is for resetting the password prompt if it is empty
+            if _prompted_password is None:
+                return
+            sftp_password = str(_prompted_password)  # must cast to string, because initial type allows None values
             if self.remember_pass.get():
                 self.passwords["sftp_key"] = sftp_password
-            # This if-clause is for preventing error messages
-            if sftp_password is None:
-                return
         # Test SFTP connection
         sftp_username = self.sftp_username_value.get()
         sftp_hostname, sftp_port = "", 22
