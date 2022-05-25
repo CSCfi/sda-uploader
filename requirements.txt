@@ -1,2 +1,2 @@
 crypt4gh==1.5
-paramiko==2.10.4
+paramiko==2.11.0
