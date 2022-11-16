@@ -100,7 +100,7 @@ def _sftp_client(
     username: str = "",
     hostname: str = "",
     port: int = 22,
-    sftp_auth: paramiko.PKey = None,
+    sftp_auth: Optional[paramiko.PKey] = None,
 ) -> Optional[paramiko.SFTPClient]:
     """SFTP client."""
     try:

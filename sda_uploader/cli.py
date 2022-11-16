@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 from functools import partial
 
-from typing import Sequence, Tuple, Union
+from typing import Optional, Sequence, Tuple, Union
 
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
@@ -51,7 +51,11 @@ def generate_one_time_key() -> Tuple:
     return private_key_file, public_key_file, random_password
 
 
-def load_encryption_keys(private_key_file: Union[str, Path] = "", private_key_password: str = None, public_key_file: Union[str, Path] = "") -> Tuple:
+def load_encryption_keys(
+    private_key_file: Union[str, Path] = "",
+    private_key_password: Optional[str] = None,
+    public_key_file: Union[str, Path] = "",
+) -> Tuple:
     """Load encryption keys."""
     private_key = ""
     if private_key_file:
@@ -167,7 +171,7 @@ def parse_arguments(arguments: Union[Sequence, None]) -> argparse.Namespace:
     return parser.parse_args(arguments)
 
 
-def main(arguments: Sequence = None) -> None:
+def main(arguments: Optional[Sequence] = None) -> None:
     """Start program."""
     print("CSC Sensitive Data Submission SFTP Tool")
 
