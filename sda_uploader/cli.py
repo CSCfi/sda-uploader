@@ -13,7 +13,7 @@ from typing import Optional, Sequence, Tuple, Union
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
 from .sftp import _sftp_connection, _sftp_upload_file, _sftp_upload_directory, _sftp_client
-from . import cli_version
+from . import __version__
 
 
 def mock_callback(password: str) -> str:
@@ -163,7 +163,7 @@ def parse_arguments(arguments: Union[Sequence, None]) -> argparse.Namespace:
         help="Password for Crypt4GH sender private key. If not set, a password will be prompted if using an existing encryption key.",
     )
     parser.add_argument("-pub", "--public_key", default=None, help="Crypt4GH recipient public key. Required for encryption.")
-    parser.add_argument("-v", "--version", action="version", version=cli_version, help="Display program version.")
+    parser.add_argument("-v", "--version", action="version", version=__version__, help="Display program version.")
     if len(sys.argv) <= 1:
         # If no command line arguments were given, print help text
         parser.print_help()

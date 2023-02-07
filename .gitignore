@@ -5,3 +5,4 @@ dist/
 *.key
 *.pub
 *.spec
+sda_uploader.egg-info/
