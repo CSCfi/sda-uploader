@@ -78,22 +78,41 @@ def _sftp_upload_directory(
     public_key: Union[str, Path] = "",
 ) -> None:
     """Upload directory."""
-    sftp_dir: Union[str, Path] = ""
     for item in os.walk(directory):
-        sftp_dir = Path(sftp_dir).joinpath(Path(item[0]).name)
-        try:
-            sftp.mkdir(str(sftp_dir))
-            print(f"Directory {sftp_dir} created.")
-        except OSError:
-            print(f"Skipping directory {sftp_dir} creation, as it already exists.")
+        # first create destination directory structure
+        mkdir_p(sftp, item[0])
+        # then upload each file
         for sub_item in item[2]:
             _sftp_upload_file(
                 sftp=sftp,
                 source=str(Path(item[0]).joinpath(sub_item)),
-                destination=f"/{str(Path(sftp_dir).joinpath(sub_item))}",
+                destination=f"/{str(Path(item[0]).joinpath(sub_item))}",
                 private_key=private_key,
                 public_key=public_key,
             )
+
+
+def mkdir_p(sftp: paramiko.SFTPClient, directory: str) -> None:
+    """Create remote SFTP directory, emulates `mkdir -p`.
+
+    Author: https://stackoverflow.com/users/2845044/gabhijit
+    Source: https://stackoverflow.com/a/20422692/8166034
+    """
+    directories = []
+
+    while len(directory) > 1:
+        directories.append(directory)
+        directory, _ = os.path.split(directory)
+
+    if len(directory) == 1 and not directory.startswith("/"):
+        directories.append(directory)
+
+    while len(directories):
+        directory = directories.pop()
+        try:
+            sftp.stat(directory)
+        except Exception:
+            sftp.mkdir(directory)
 
 
 def _sftp_client(
