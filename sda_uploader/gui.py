@@ -178,7 +178,7 @@ class GUI:
                 self.select_directory_button.config(state="normal")
         elif action == "directory":
             file_path = askdirectory()
-            self.file_value.set(file_path)
+            self.file_value.set(Path(file_path).name)
             if len(file_path) > 0:
                 self.select_file_button.config(state="disabled")
             else:
