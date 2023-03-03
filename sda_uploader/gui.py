@@ -198,7 +198,7 @@ class GUI:
         # Ask for RSA key password
         sftp_password = self.passwords["sftp_key"]
         while len(sftp_password) == 0:
-            _prompted_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY", show="*")
+            _prompted_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY or Username", show="*")
             # This if-clause is for resetting the password prompt if it is empty
             if _prompted_password is None:
                 return
@@ -214,7 +214,7 @@ class GUI:
             sftp_port = int(sftp_server[1])
         except (ValueError, IndexError):
             sftp_hostname = self.sftp_server_value.get()
-        sftp_key = self.test_sftp_connection(
+        sftp_auth = self.test_sftp_connection(
             username=sftp_username,
             hostname=sftp_hostname,
             port=sftp_port,
@@ -222,12 +222,12 @@ class GUI:
             sftp_pass=sftp_password,
         )
         # Encrypt and upload
-        if private_key and sftp_key:
+        if private_key and sftp_auth:
             sftp = _sftp_client(
                 username=sftp_username,
                 hostname=sftp_hostname,
                 port=sftp_port,
-                sftp_auth=sftp_key,
+                sftp_auth=sftp_auth,
             )
             if sftp:
                 # This code block will always execute and is only here to satisfy mypy tests
@@ -306,11 +306,11 @@ class GUI:
 
     def test_sftp_connection(
         self, username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = ""
-    ) -> Union[paramiko.PKey, None]:
+    ) -> Union[paramiko.PKey, str, None]:
         """Test SFTP connection and determine key type before uploading."""
-        _key = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
+        _sftp_auth = _sftp_connection(username=username, hostname=hostname, port=port, sftp_key=sftp_key, sftp_pass=sftp_pass)
         self.write_config()  # save fields
-        return _key
+        return _sftp_auth
 
     def sftp_upload(
         self,
