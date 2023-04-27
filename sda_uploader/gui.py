@@ -15,6 +15,7 @@ from functools import partial
 from platform import system
 from os import chmod
 from stat import S_IRWXU
+from unittest.mock import MagicMock
 
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
@@ -45,6 +46,7 @@ class GUI:
         self.window.resizable(False, False)
         self.window.title("CSC Sensitive Data Submission Tool")
         # print to activity log instead of console
+        sys.stdout = MagicMock()
         sys.stdout.write = self.print_redirect  # type:ignore
 
         # Load previous values from config file
