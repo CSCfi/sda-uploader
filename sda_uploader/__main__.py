@@ -7,7 +7,7 @@ import tkinter as tk
 def main() -> None:
     """Run Program."""
     root = tk.Tk()
-    GUI(root)
+    gui = GUI(root)
     print("To begin file upload:\n")
     print("1. Load your recipient's public key")
     print("2. Select a file or a directory for upload (not both)")
@@ -16,6 +16,7 @@ def main() -> None:
     print("5. Click [Encrypt and Upload File(s)] to upload selected file or directory")
     print("6. Password for SFTP key or, username authentication will be prompted\n")
     root.mainloop()
+    gui.cleanup()
 
 
 if __name__ == "__main__":
