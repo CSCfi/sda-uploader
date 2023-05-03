@@ -345,8 +345,8 @@ class GUI:
         sftp.close()
         print("SFTP has been disconnected.")
 
-    def cleanup(self):
-        """Restore the sys.stdout on Windows"""
+    def cleanup(self) -> None:
+        """Restore the sys.stdout on Windows."""
         if system() == "Windows":
             sys.stdout = self.old_stdout
             self.tmp_stdout.close()
