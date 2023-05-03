@@ -1,5 +1,6 @@
 """SDA Uploader GUI."""
 
+import os
 import sys
 import json
 import getpass
@@ -15,7 +16,6 @@ from functools import partial
 from platform import system
 from os import chmod
 from stat import S_IRWXU
-from unittest.mock import MagicMock
 
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
 
@@ -45,8 +45,12 @@ class GUI:
         self.window = window
         self.window.resizable(False, False)
         self.window.title("CSC Sensitive Data Submission Tool")
+        # This prevents pyinstaller --noconsole from referencing a nonexistent sys.stdout.write
+        if system() == "Windows":
+            self.old_stdout = sys.stdout
+            self.tmp_stdout = open(os.devnull, "w")
+            sys.stdout = self.tmp_stdout
         # print to activity log instead of console
-        sys.stdout = MagicMock()
         sys.stdout.write = self.print_redirect  # type:ignore
 
         # Load previous values from config file
@@ -340,3 +344,9 @@ class GUI:
         print("Disconnecting SFTP.")
         sftp.close()
         print("SFTP has been disconnected.")
+
+    def cleanup(self) -> None:
+        """Restore the sys.stdout on Windows."""
+        if system() == "Windows":
+            sys.stdout = self.old_stdout
+            self.tmp_stdout.close()
