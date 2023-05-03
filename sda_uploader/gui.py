@@ -1,5 +1,6 @@
 """SDA Uploader GUI."""
 
+import os
 import sys
 import json
 import getpass
@@ -36,16 +37,6 @@ else:
     pass
 
 
-class NullStdout:
-    """A dummy stdout to replace nonexistent sys.stdout on Windows"""
-
-    def __init__(self):
-        return
-
-    def write(self):
-        return
-
-
 class GUI:
     """Graphical User Interface."""
 
@@ -56,8 +47,9 @@ class GUI:
         self.window.title("CSC Sensitive Data Submission Tool")
         # This prevents pyinstaller --noconsole from referencing a nonexistent sys.stdout.write
         if system() == "Windows":
-            self.OLD_STDOUT = sys.stdout
-            sys.stdout = NullStdout
+            self.old_stdout = sys.stdout
+            self.tmp_stdout = open(os.devnull, "w")
+            sys.stdout = self.tmp_stdout
         # print to activity log instead of console
         sys.stdout.write = self.print_redirect  # type:ignore
 
@@ -356,4 +348,5 @@ class GUI:
     def cleanup(self):
         """Restore the sys.stdout on Windows"""
         if system() == "Windows":
-            sys.stdout = self.OLD_STDOUT
+            sys.stdout = self.old_stdout
+            self.tmp_stdout.close()
