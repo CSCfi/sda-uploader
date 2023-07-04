@@ -1,0 +1,9 @@
+CompanyName: CSC-Tieteen tietotekniikan keskus Oy
+FileDescription: SDA Uploader command line user interface
+InternalName: sda_uploader
+LegalCopyright: © CSC-Tieteen tietotekniikan keskus Oy
+OriginalFilename: sdacli.exe
+ProductName: sda_uploader
+Translation:
+  - langID: 1033
+    charsetID: 1200

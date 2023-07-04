@@ -85,7 +85,7 @@ sdacli file.txt -host server -u username -pub recipient.pub
 ## Installation
 
 The GUI requires:
-- Python 3.6+
+- Python 3.10+
 - Tkinter
 
 ```
