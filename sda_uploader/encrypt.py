@@ -21,7 +21,7 @@ def verify_crypt4gh_header(file: Union[str, Path] = "") -> bool:
     """Verify, that a file has Crypt4GH header."""
     print("Verifying file Crypt4GH header.")
     with open(file, "rb") as f:
-        header = f.read()[:8]
+        header = f.read(8)
         if header == b"crypt4gh":
             return True
         else:
