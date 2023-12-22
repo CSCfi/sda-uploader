@@ -61,7 +61,7 @@ def _sftp_upload_file(
     sftp: paramiko.SFTPClient,
     source: Union[str, Path] = "",
     destination: Union[str, Path] = "",
-    private_key: Union[str, Path] = "",
+    private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
 ) -> None:
     """Upload a single file."""
@@ -86,7 +86,7 @@ def _sftp_upload_file(
 def _sftp_upload_directory(
     sftp: paramiko.SFTPClient,
     directory: Union[str, Path] = "",
-    private_key: Union[str, Path] = "",
+    private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
 ) -> None:
     """Upload directory."""

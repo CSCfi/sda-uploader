@@ -11,6 +11,7 @@ from functools import partial
 from typing import Optional, Sequence, Tuple, Union
 
 from crypt4gh.keys import c4gh, get_private_key, get_public_key
+from nacl.public import PrivateKey
 
 from .sftp import _sftp_connection, _sftp_upload_file, _sftp_upload_directory, _sftp_client
 from . import __version__
@@ -57,7 +58,7 @@ def load_encryption_keys(
     public_key_file: Union[str, Path] = "",
 ) -> Tuple:
     """Load encryption keys."""
-    private_key = ""
+    private_key = b""
     if private_key_file:
         # If using user's own crypt4gh private key
         try:
@@ -66,14 +67,7 @@ def load_encryption_keys(
             sys.exit(f"Incorrect password for {private_key_file}")
     else:
         # If using generated one-time encryption key
-        temp_private_key, temp_public_key, temp_private_key_password = generate_one_time_key()
-        try:
-            private_key = get_private_key(temp_private_key, partial(mock_callback, temp_private_key_password))
-            _remove_file(temp_private_key)
-            _remove_file(temp_public_key)
-
-        except Exception:
-            sys.exit(f"Incorrect password for {private_key}. This is likely a bug.")  # generated password, should not fail
+        private_key = bytes(PrivateKey.generate())
     public_key = get_public_key(public_key_file)
     return private_key, public_key
 
