@@ -3,10 +3,8 @@
 import os
 import sys
 import json
-import getpass
-import secrets
 import tkinter as tk
-from typing import Dict, Tuple, Union
+from typing import Dict, Union
 import paramiko
 
 from tkinter.simpledialog import askstring
@@ -17,7 +15,8 @@ from platform import system
 from os import chmod
 from stat import S_IRWXU
 
-from crypt4gh.keys import c4gh, get_private_key, get_public_key
+from crypt4gh.keys import get_public_key
+from nacl.public import PrivateKey
 
 from .sftp import _sftp_connection, _sftp_upload_file, _sftp_upload_directory, _sftp_client
 from pathlib import Path
@@ -195,12 +194,7 @@ class GUI:
         else:
             print(f"Unknown action: {action}")
 
-    def _do_upload(self, private_key: str, password: str) -> None:
-        try:
-            private_key = get_private_key(private_key, partial(self.mock_callback, password))
-        except Exception:
-            print("Incorrect private key passphrase")
-            return
+    def _do_upload(self, private_key: bytes) -> None:
         # Ask for RSA key password
         sftp_password = self.passwords["sftp_key"]
         while len(sftp_password) == 0:
@@ -245,49 +239,11 @@ class GUI:
     def _start_process(self) -> None:
         if self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
             # Generate random encryption key
-            temp_private_key, temp_public_key, temp_password = self._generate_one_time_key()
+            temp_private_key = bytes(PrivateKey.generate())
             # Encrypt and upload
-            self._do_upload(temp_private_key, temp_password)
-            # Remove temp keys
-            self._remove_file(temp_private_key)
-            self._remove_file(temp_public_key)
+            self._do_upload(temp_private_key)
         else:
             print("All fields must be filled")
-
-    def _remove_file(self, filepath: str) -> None:
-        """Remove temp files."""
-        try:
-            Path(filepath).unlink()
-            print(f"Removed temp file {filepath}")
-        except FileNotFoundError:
-            print(f"Deletion of file {filepath} failed")
-            pass
-        except PermissionError:
-            print(f"No permission to delete {filepath}. Please do manual cleanup.")
-            pass
-        except Exception:
-            print(f"Unexpected {Exception}, {type(Exception)}")
-            pass
-
-    def _generate_one_time_key(self) -> Tuple:
-        """Generate one time Crypt4GH encryption key."""
-        random_password = secrets.token_hex(16)
-        private_key_file = f"{getpass.getuser()}_temporary_crypt4gh.key"
-        public_key_file = f"{getpass.getuser()}_temporary_crypt4gh.pub"
-        # Remove existing temp keys if they exist
-        self._remove_file(private_key_file)
-        self._remove_file(public_key_file)
-        try:
-            c4gh.generate(private_key_file, public_key_file, passphrase=str.encode(random_password))
-            print("One-time use encryption key generated")
-        except PermissionError:
-            print("A previous generated key exists under the name private_key_file already exists remove it and try again.")
-
-        return private_key_file, public_key_file, random_password
-
-    def mock_callback(self, password: str) -> str:
-        """Mock callback to return password."""
-        return password
 
     def write_config(self) -> None:
         """Save field values for re-runs."""
@@ -322,7 +278,7 @@ class GUI:
         self,
         sftp: paramiko.SFTPClient,
         target: Union[str, Path] = "",
-        private_key: Union[str, Path] = "",
+        private_key: Union[bytes, Path] = b"",
         public_key: Union[str, Path] = "",
     ) -> None:
         """Upload file or directory."""
