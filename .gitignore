@@ -6,3 +6,6 @@ dist/
 *.pub
 *.spec
 sda_uploader.egg-info/
+
+# development files
+venv/
