@@ -1,7 +1,6 @@
 """SDA Uploader CLI."""
 
 import sys
-import secrets
 import getpass
 import argparse
 
@@ -10,7 +9,7 @@ from functools import partial
 
 from typing import Optional, Sequence, Tuple, Union
 
-from crypt4gh.keys import c4gh, get_private_key, get_public_key
+from crypt4gh.keys import get_private_key, get_public_key
 from nacl.public import PrivateKey
 
 from .sftp import _sftp_connection, _sftp_upload_file, _sftp_upload_directory, _sftp_client
@@ -20,36 +19,6 @@ from . import __version__
 def mock_callback(password: str) -> str:
     """Mock callback to return password."""
     return password
-
-
-def _remove_file(filepath: str) -> None:
-    """Remove temp files."""
-    try:
-        Path(filepath).unlink()
-        print(f"Removed temp file {filepath}")
-    except FileNotFoundError:
-        print(f"Deletion of file {filepath} failed")
-        pass
-    except PermissionError:
-        print(f"No permission to delete {filepath}. Please do manual cleanup.")
-        pass
-    except Exception:
-        print(f"Unexpected {Exception}, {type(Exception)}")
-        pass
-
-
-def generate_one_time_key() -> Tuple:
-    """Generate one time Crypt4GH encryption key."""
-    random_password = secrets.token_hex(16)
-    private_key_file = f"{getpass.getuser()}_temporary_crypt4gh.key"
-    public_key_file = f"{getpass.getuser()}_temporary_crypt4gh.pub"
-    # Remove existing temp keys if they exist
-    _remove_file(private_key_file)
-    _remove_file(public_key_file)
-
-    c4gh.generate(private_key_file, public_key_file, passphrase=str.encode(random_password))
-    print("One-time use encryption key generated.")
-    return private_key_file, public_key_file, random_password
 
 
 def load_encryption_keys(

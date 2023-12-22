@@ -245,25 +245,6 @@ class GUI:
         else:
             print("All fields must be filled")
 
-    def _remove_file(self, filepath: str) -> None:
-        """Remove temp files."""
-        try:
-            Path(filepath).unlink()
-            print(f"Removed temp file {filepath}")
-        except FileNotFoundError:
-            print(f"Deletion of file {filepath} failed")
-            pass
-        except PermissionError:
-            print(f"No permission to delete {filepath}. Please do manual cleanup.")
-            pass
-        except Exception:
-            print(f"Unexpected {Exception}, {type(Exception)}")
-            pass
-
-    def mock_callback(self, password: str) -> str:
-        """Mock callback to return password."""
-        return password
-
     def write_config(self) -> None:
         """Save field values for re-runs."""
         data = {
