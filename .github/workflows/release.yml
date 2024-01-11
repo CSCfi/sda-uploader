@@ -172,10 +172,10 @@ jobs:
           pip install pyinstaller
           pip install .
           pip install pyinstaller-versionfile
-      - name: Build GUI artifact macOS
+      - name: Build CLI artifact macOS
         if: matrix.os == 'macOS-latest'
         run: |
-          pyinstaller --noconsole --onefile sdacli.py --name ${{ matrix.asset_name }}
+          pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
       - name: Build CLI artifact Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -183,14 +183,14 @@ jobs:
           docker pull cscfi/pyinstaller
           docker run --rm -v "${PWD}:/builder" cscfi/pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }}
           sudo chown -R $USER:$GROUP dist/
-      - name: Build GUI artifact windows
+      - name: Build CLI artifact windows
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           TAG=${{ github.ref_name }}
           VERSION=${TAG#v}
           create-version-file versionfile_cli.yml --outfile file_version_info.txt --version $VERSION
-          pyinstaller --noconsole --onefile sdacli.py --name ${{ matrix.asset_name }} --version-file file_version_info.txt
+          pyinstaller --onefile sdacli.py --name ${{ matrix.asset_name }} --version-file file_version_info.txt
       - name: Create temporary certificate file
         if: matrix.os == 'windows-latest'
         run: |
