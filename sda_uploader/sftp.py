@@ -15,7 +15,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
     transport = paramiko.Transport((hostname, int(port)))
     paramiko_key: paramiko.PKey
     try:
-        print("Testing if SFTP key is of type RSA")
+        print("Testing if SSH key is of type RSA")
         paramiko_key = paramiko.rsakey.RSAKey.from_private_key_file(sftp_key, password=sftp_pass)
         transport.connect(
             username=username,
@@ -29,7 +29,7 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
         transport.close()
     # Test if key is ed25519
     try:
-        print("Testing if SFTP key is of type Ed25519")
+        print("Testing if SSH key is of type Ed25519")
         paramiko_key = paramiko.ed25519key.Ed25519Key(filename=sftp_key, password=sftp_pass)
         transport.connect(
             username=username,
