@@ -183,7 +183,7 @@ class GUI:
                 self.select_directory_button.config(state="normal")
         elif action == "directory":
             file_path = askdirectory()
-            self.file_value.set(Path(file_path).name)
+            self.file_value.set(file_path)
             if len(file_path) > 0:
                 self.select_file_button.config(state="disabled")
             else:
@@ -277,7 +277,7 @@ class GUI:
     def sftp_upload(
         self,
         sftp: paramiko.SFTPClient,
-        target: Union[str, Path] = "",
+        target: str = "",
         private_key: Union[bytes, Path] = b"",
         public_key: Union[str, Path] = "",
     ) -> None:

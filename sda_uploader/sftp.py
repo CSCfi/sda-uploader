@@ -59,8 +59,8 @@ def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sft
 
 def _sftp_upload_file(
     sftp: paramiko.SFTPClient,
-    source: Union[str, Path] = "",
-    destination: Union[str, Path] = "",
+    source: str = "",
+    destination: str = "",
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
 ) -> None:
@@ -70,14 +70,14 @@ def _sftp_upload_file(
         print(f"File {source} was recognised as a Crypt4GH file, and will be uploaded.")
         print(f"Uploading {source}")
         sftp.put(str(source), str(destination))
-        print(f"{source} has been uploaded.")
+        print(f"{source} has been uploaded to {destination}.c4gh")
     else:
         # Encrypt before uploading
         print(f"File {source} was not recognised as a Crypt4GH file, and must be encrypted before uploading.")
         encrypt_file(file=source, private_key_file=private_key, recipient_public_key=public_key)
-        print(f"Uploading {source}.c4gh")
+        print(f"Uploading {source}.c4gh to {destination}.c4gh")
         sftp.put(f"{source}.c4gh", f"{destination}.c4gh")
-        print(f"{source}.c4gh has been uploaded.")
+        print(f"{source}.c4gh has been uploaded to {destination}.c4gh")
         print(f"Removing auto-encrypted file {source}.c4gh")
         os.remove(f"{source}.c4gh")
         print(f"{source}.c4gh removed")
@@ -85,20 +85,24 @@ def _sftp_upload_file(
 
 def _sftp_upload_directory(
     sftp: paramiko.SFTPClient,
-    directory: Union[str, Path] = "",
+    directory: str = "",
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
 ) -> None:
     """Upload directory."""
     for item in os.walk(directory):
+        # determine relative directory structure from absolute path
+        # example /home/user/target -> target
+        # example /home/user/target/subfolder -> target/subfolder
+        relative_structure = f"{Path(directory).name}{item[0].removeprefix(directory)}"
         # first create destination directory structure
-        mkdir_p(sftp, item[0])
-        # then upload each file
+        mkdir_p(sftp, relative_structure)
+        # then upload each file per directory
         for sub_item in item[2]:
             _sftp_upload_file(
                 sftp=sftp,
                 source=str(Path(item[0]).joinpath(sub_item)),
-                destination=f"/{str(Path(item[0]).joinpath(sub_item))}",
+                destination=f"/{str(Path(relative_structure).joinpath(sub_item))}",
                 private_key=private_key,
                 public_key=public_key,
             )
