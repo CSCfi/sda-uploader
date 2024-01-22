@@ -97,7 +97,7 @@ class GUI:
         if sftp_server_credentials and len(sftp_server_credentials) > 0:
             self.sftp_server_value.set(sftp_server_credentials)
 
-        self.sftp_key_label = tk.Label(window, text="SFTP Key")
+        self.sftp_key_label = tk.Label(window, text="SSH Key")
         self.sftp_key_label.grid(column=0, row=8, sticky=tk.W)
         self.sftp_key_value = tk.StringVar()
         self.sftp_key_field = tk.Entry(window, width=OS_CONFIG["field_width"], textvariable=self.sftp_key_value)
@@ -141,7 +141,7 @@ class GUI:
 
         self.load_sftp_key_button = tk.Button(
             window,
-            text="Load SFTP Key",
+            text="Load SSH Key",
             width=OS_CONFIG["config_button_width"],
             command=partial(self.open_file, "sftp_key"),
         )
@@ -157,7 +157,7 @@ class GUI:
         self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
         self.remember_pass = tk.IntVar()
-        self.passwords = {"sftp_key": ""}
+        self.passwords: Dict[str, Union[str, bool]] = {"sftp_password": "", "asked_password": False}
         self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
         self.remember_password.grid(column=1, row=10, sticky=tk.E)
 
@@ -183,7 +183,7 @@ class GUI:
                 self.select_directory_button.config(state="normal")
         elif action == "directory":
             file_path = askdirectory()
-            self.file_value.set(Path(file_path).name)
+            self.file_value.set(file_path)
             if len(file_path) > 0:
                 self.select_file_button.config(state="disabled")
             else:
@@ -196,15 +196,17 @@ class GUI:
 
     def _do_upload(self, private_key: bytes) -> None:
         # Ask for RSA key password
-        sftp_password = self.passwords["sftp_key"]
-        while len(sftp_password) == 0:
-            _prompted_password = askstring("SFTP Passphrase", "Passphrase for SFTP KEY or Username", show="*")
-            # This if-clause is for resetting the password prompt if it is empty
+        sftp_password: str = str(self.passwords["sftp_password"])
+        if not self.passwords["asked_password"]:
+            _prompted_password = askstring("SFTP Passphrase", "Passphrase for SSH KEY or SFTP Username.\nLeave empty if using unencrypted SSH Key.", show="*")
             if _prompted_password is None:
+                # This if-clause is for closing the prompt without proceeding with the upload workflow
                 return
             sftp_password = str(_prompted_password)  # must cast to string, because initial type allows None values
             if self.remember_pass.get():
-                self.passwords["sftp_key"] = sftp_password
+                # password is stored only for this session, in case the user wants to upload again
+                self.passwords["sftp_password"] = sftp_password
+            self.passwords["asked_password"] = True
         # Test SFTP connection
         sftp_username = self.sftp_username_value.get()
         sftp_hostname, sftp_port = "", 22
@@ -235,6 +237,7 @@ class GUI:
                 self.sftp_upload(sftp=sftp, target=self.file_value.get(), private_key=private_key, public_key=public_key)
         else:
             print("Could not form SFTP connection.")
+            self.passwords["asked_password"] = False  # resetting prompt in case password was wrong
 
     def _start_process(self) -> None:
         if self.their_key_value.get() and self.file_value.get() and self.sftp_username_value.get() and self.sftp_server_value.get():
@@ -277,7 +280,7 @@ class GUI:
     def sftp_upload(
         self,
         sftp: paramiko.SFTPClient,
-        target: Union[str, Path] = "",
+        target: str = "",
         private_key: Union[bytes, Path] = b"",
         public_key: Union[str, Path] = "",
     ) -> None:
