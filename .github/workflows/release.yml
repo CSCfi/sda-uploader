@@ -49,7 +49,7 @@ jobs:
             artifact_name: sdagui
             os_suffix: macos-amd64
             asset_name: sdagui
-        python-version: ["3.10"]
+        python-version: ["3.11"]
 
     runs-on: ${{ matrix.os }}
 
@@ -144,7 +144,7 @@ jobs:
             artifact_name: sdacli
             os_suffix: macos-amd64
             asset_name: sdacli
-        python-version: ["3.10"]
+        python-version: ["3.11"]
 
     runs-on: ${{ matrix.os }}
 
