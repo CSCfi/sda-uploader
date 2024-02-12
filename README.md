@@ -30,7 +30,7 @@ Current features:
 - Supports RSA and Ed25519 keys or username+password for SFTP authentication
 
 ### CLI Usage
-```
+```bash
 $ sdacli 
 CSC Sensitive Data Submission SFTP Tool
 Parsing arguments
@@ -88,7 +88,7 @@ The GUI requires:
 - Python 3.11+
 - Tkinter
 
-```
+```bash
 git clone https://github.com/CSCfi/sda-uploader
 pip install ./sda-uploader
 
@@ -103,7 +103,7 @@ Standalone executable build requires:
 
 The GUI can be built into a standalone executable and distributed to machines that don't have python installed. After running the `pyinstaller` command, the standalone executable file can be found in the `dist/` directory.
 
-```
+```bash
 pip install pyinstaller
 
 pyinstaller --noconsole --onefile sdagui.py
@@ -113,14 +113,14 @@ pyinstaller --onefile sdacli.py
 This has been tested on Linux, Mac and Windows.
 
 To run the executable on Linux and Mac:
-```
+```bash
 ./sdagui
 ./sdacli
 ```
 
 To run the executable on Windows:
 - Double click on `sdagui.exe` or `sdacli.exe` or run the following in `cmd`:
-```
+```bash
 sdagui.exe
 sdacli.exe
 ```
