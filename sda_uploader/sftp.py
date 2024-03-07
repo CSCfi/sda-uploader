@@ -66,6 +66,7 @@ def _sftp_upload_file(
 ) -> None:
     """Upload a single file."""
     verified = verify_crypt4gh_header(source)
+    destination = destination.replace(os.sep, "/")  # sftp inbox used to auto-convert \ to / but doesn't anymore
     if verified:
         print(f"File {source} was recognised as a Crypt4GH file, and will be uploaded.")
         print(f"Uploading {source}")
@@ -94,7 +95,8 @@ def _sftp_upload_directory(
         # determine relative directory structure from absolute path
         # example /home/user/target -> target
         # example /home/user/target/subfolder -> target/subfolder
-        relative_structure = f"{Path(directory).name}{item[0].removeprefix(directory)}"
+        # example C:\Users\user\target\subfolder -> target/subfolder
+        relative_structure = f"{Path(directory).name}{item[0].removeprefix(directory)}".replace(os.sep, "/")
         # first create destination directory structure
         mkdir_p(sftp, relative_structure)
         # then upload each file per directory

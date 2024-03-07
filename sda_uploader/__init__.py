@@ -1,3 +1,3 @@
 """SDA Uploader Module."""
 
-__version__ = "0.8.1"
+__version__ = "2024.03.0"
