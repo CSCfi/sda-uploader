@@ -116,12 +116,12 @@ def _sftp_upload_file(
 def _get_remote_size(sftp: paramiko.SFTPClient, filepath: str) -> int:
     """Get remote file size or return 0 if file doesn't exist."""
     try:
-        return sftp.stat(filepath).st_size
+        return sftp.stat(filepath).st_size  # type: ignore
     except IOError:
         return 0
 
 
-def _progress(filename: str = "", remote_size: int = 0, local_size: int = 0, client: str = ""):
+def _progress(filename: str = "", remote_size: int = 0, local_size: int = 0, client: str = "") -> None:
     """Handle displaying progress of upload."""
     match client:
         case "gui":

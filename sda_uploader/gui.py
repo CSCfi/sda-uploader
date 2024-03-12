@@ -10,7 +10,6 @@ import paramiko
 from tkinter.simpledialog import askstring
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.scrolledtext import ScrolledText
-from tkinter.ttk import Progressbar
 from functools import partial
 from platform import system
 from os import chmod
