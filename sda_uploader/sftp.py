@@ -5,6 +5,9 @@ import os
 from .encrypt import encrypt_file, verify_crypt4gh_header
 from pathlib import Path
 from typing import Union, Optional
+from sys import stdout as s
+
+CHUNK_SIZE = int(os.getenv("SFTP_CHUNK_SIZE", "1_048_576"))
 
 
 def _sftp_connection(username: str = "", hostname: str = "", port: int = 22, sftp_key: str = "", sftp_pass: str = "") -> Union[paramiko.PKey, str, None]:
@@ -63,25 +66,49 @@ def _sftp_upload_file(
     destination: str = "",
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
+    overwrite: bool = False,
 ) -> None:
     """Upload a single file."""
     verified = verify_crypt4gh_header(source)
+    delete_encrypted_file = False
     destination = destination.replace(os.sep, "/")  # sftp inbox used to auto-convert \ to / but doesn't anymore
-    if verified:
-        print(f"File {source} was recognised as a Crypt4GH file, and will be uploaded.")
-        print(f"Uploading {source}")
-        sftp.put(str(source), str(destination))
-        print(f"{source} has been uploaded to {destination}.c4gh")
-    else:
-        # Encrypt before uploading
+    if not verified:
         print(f"File {source} was not recognised as a Crypt4GH file, and must be encrypted before uploading.")
         encrypt_file(file=source, private_key_file=private_key, recipient_public_key=public_key)
-        print(f"Uploading {source}.c4gh to {destination}.c4gh")
-        sftp.put(f"{source}.c4gh", f"{destination}.c4gh")
-        print(f"{source}.c4gh has been uploaded to {destination}.c4gh")
-        print(f"Removing auto-encrypted file {source}.c4gh")
-        os.remove(f"{source}.c4gh")
-        print(f"{source}.c4gh removed")
+        delete_encrypted_file = True
+    # The upload has two methods:
+    # 1. resume upload = if remote file is smaller than local file, the missing bytes are uploaded (default option)
+    # this is useful if the upload process was interrupted, and you want to resume uploading files
+    # 2. overwrite remote file with local file = the remote file will be deleted and overwritten with the local file (explicit)
+    # The resume upload has been adapted from here:
+    # https://chromium.googlesource.com/chromiumos/platform/factory/+/refs/heads/stabilize-8249.B/py/lumberjack/uploader_sftp.py
+    write_flag = "wb" if overwrite else "ab"
+    source = source if source.endswith(".c4gh") else f"{source}.c4gh"
+    destination = destination if destination.endswith(".c4gh") else f"{destination}.c4gh"
+    local_size = os.path.getsize(source)
+    remote_size = 0
+    print(f"Uploading {source} to {destination}")
+    try:
+        remote_size = sftp.stat(destination).st_size
+    except IOError:
+        write_flag = "wb"
+        pass
+    with open(source, "rb") as local_file:
+        with sftp.open(destination, write_flag) as remote_file:
+            local_file.seek(remote_size)
+            while True:
+                read_buffer = local_file.read(CHUNK_SIZE)
+                remote_file.write(read_buffer)
+                remote_file.flush()
+                remote_size += len(read_buffer)
+                if len(read_buffer) == 0 or local_size == remote_size:
+                    break
+    print(f"Finished uploading {source} to {destination}")
+    if delete_encrypted_file:
+        # Remove encrypted file, if it was encrypted by sda-uploader, but not, if it was already encrypted by the user
+        print(f"Removing auto-encrypted file {source}")
+        os.remove(f"{source}")
+        print(f"{source} removed")
 
 
 def _sftp_upload_directory(
@@ -89,6 +116,7 @@ def _sftp_upload_directory(
     directory: str = "",
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
+    overwrite: bool = False,
 ) -> None:
     """Upload directory."""
     for item in os.walk(directory):
@@ -107,6 +135,7 @@ def _sftp_upload_directory(
                 destination=f"/{str(Path(relative_structure).joinpath(sub_item))}",
                 private_key=private_key,
                 public_key=public_key,
+                overwrite=overwrite,
             )
 
 

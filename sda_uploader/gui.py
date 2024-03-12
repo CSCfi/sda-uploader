@@ -108,9 +108,9 @@ class GUI:
             self.sftp_key_value.set(sftp_key_file)
 
         self.activity_label = tk.Label(window, text="Activity Log")
-        self.activity_label.grid(column=0, row=10, sticky=tk.W)
+        self.activity_label.grid(column=0, row=11, sticky=tk.W)
         self.activity_field = ScrolledText(window, height=12)
-        self.activity_field.grid(column=0, row=11, columnspan=3, sticky=tk.W)
+        self.activity_field.grid(column=0, row=12, columnspan=3, sticky=tk.W)
         self.activity_field.config(state="disabled")
 
         # 2nd column BUTTONS
@@ -156,10 +156,15 @@ class GUI:
         )
         self.encrypt_button.grid(column=1, row=7, sticky=tk.E, columnspan=2, rowspan=3)
 
-        self.remember_pass = tk.IntVar()
+        self.remember_pass = tk.BooleanVar()
+        self.overwrite_files = tk.BooleanVar()
         self.passwords: Dict[str, Union[str, bool]] = {"sftp_password": "", "asked_password": False}
-        self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=1, offvalue=0)
+        self.remember_password = tk.Checkbutton(window, text="Save password for this session", variable=self.remember_pass, onvalue=True, offvalue=False)
+        self.overwrite_files_option = tk.Checkbutton(
+            window, text="Overwrite existing remote files", variable=self.overwrite_files, onvalue=True, offvalue=False
+        )
         self.remember_password.grid(column=1, row=10, sticky=tk.E)
+        self.overwrite_files_option.grid(column=1, row=11, sticky=tk.E)
 
     def print_redirect(self, message: str) -> None:
         """Print to activity log widget instead of console."""
@@ -234,7 +239,13 @@ class GUI:
             if sftp:
                 # This code block will always execute and is only here to satisfy mypy tests
                 public_key = get_public_key(self.their_key_value.get())
-                self.sftp_upload(sftp=sftp, target=self.file_value.get(), private_key=private_key, public_key=public_key)
+                self.sftp_upload(
+                    sftp=sftp,
+                    target=self.file_value.get(),
+                    private_key=private_key,
+                    public_key=public_key,
+                    overwrite=self.overwrite_files.get(),
+                )
         else:
             print("Could not form SFTP connection.")
             self.passwords["asked_password"] = False  # resetting prompt in case password was wrong
@@ -283,9 +294,11 @@ class GUI:
         target: str = "",
         private_key: Union[bytes, Path] = b"",
         public_key: Union[str, Path] = "",
+        overwrite: bool = False,
     ) -> None:
         """Upload file or directory."""
         print("Starting upload process.")
+        print(overwrite)
 
         if Path(target).is_file():
             _sftp_upload_file(
@@ -294,10 +307,17 @@ class GUI:
                 destination=Path(target).name,
                 private_key=private_key,
                 public_key=public_key,
+                overwrite=overwrite,
             )
 
         if Path(target).is_dir():
-            _sftp_upload_directory(sftp=sftp, directory=target, private_key=private_key, public_key=public_key)
+            _sftp_upload_directory(
+                sftp=sftp,
+                directory=target,
+                private_key=private_key,
+                public_key=public_key,
+                overwrite=overwrite,
+            )
 
         # Close SFTP connection
         print("Disconnecting SFTP.")
