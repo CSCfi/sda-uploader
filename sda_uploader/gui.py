@@ -10,6 +10,7 @@ import paramiko
 from tkinter.simpledialog import askstring
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.scrolledtext import ScrolledText
+from tkinter.ttk import Progressbar
 from functools import partial
 from platform import system
 from os import chmod
@@ -308,6 +309,7 @@ class GUI:
                 private_key=private_key,
                 public_key=public_key,
                 overwrite=overwrite,
+                client="gui",
             )
 
         if Path(target).is_dir():
@@ -317,6 +319,7 @@ class GUI:
                 private_key=private_key,
                 public_key=public_key,
                 overwrite=overwrite,
+                client="gui",
             )
 
         # Close SFTP connection

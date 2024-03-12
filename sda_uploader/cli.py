@@ -179,6 +179,7 @@ def main(arguments: Optional[Sequence] = None) -> None:
             private_key=private_key,
             public_key=public_key,
             overwrite=cli_args.overwrite,
+            client="cli",
         )
 
     # If target is a directory, handle directory upload case
@@ -189,6 +190,7 @@ def main(arguments: Optional[Sequence] = None) -> None:
             private_key=private_key,
             public_key=public_key,
             overwrite=cli_args.overwrite,
+            client="cli",
         )
 
     print("Program finished.")

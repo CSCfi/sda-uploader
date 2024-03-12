@@ -67,6 +67,7 @@ def _sftp_upload_file(
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
     overwrite: bool = False,
+    client: str = "",
 ) -> None:
     """Upload a single file."""
     verified = verify_crypt4gh_header(source)
@@ -82,17 +83,12 @@ def _sftp_upload_file(
     # 2. overwrite remote file with local file = the remote file will be deleted and overwritten with the local file (explicit)
     # The resume upload has been adapted from here:
     # https://chromium.googlesource.com/chromiumos/platform/factory/+/refs/heads/stabilize-8249.B/py/lumberjack/uploader_sftp.py
-    write_flag = "wb" if overwrite else "ab"
     source = source if source.endswith(".c4gh") else f"{source}.c4gh"
     destination = destination if destination.endswith(".c4gh") else f"{destination}.c4gh"
+    write_flag = "wb" if overwrite else "ab"
+    remote_size = 0 if overwrite else _get_remote_size(sftp, destination)
     local_size = os.path.getsize(source)
-    remote_size = 0
     print(f"Uploading {source} to {destination}")
-    try:
-        remote_size = sftp.stat(destination).st_size
-    except IOError:
-        write_flag = "wb"
-        pass
     with open(source, "rb") as local_file:
         with sftp.open(destination, write_flag) as remote_file:
             local_file.seek(remote_size)
@@ -101,6 +97,12 @@ def _sftp_upload_file(
                 remote_file.write(read_buffer)
                 remote_file.flush()
                 remote_size += len(read_buffer)
+                _progress(
+                    filename=destination,
+                    remote_size=remote_size,
+                    local_size=local_size,
+                    client=client,
+                )
                 if len(read_buffer) == 0 or local_size == remote_size:
                     break
     print(f"Finished uploading {source} to {destination}")
@@ -111,12 +113,35 @@ def _sftp_upload_file(
         print(f"{source} removed")
 
 
+def _get_remote_size(sftp: paramiko.SFTPClient, filepath: str) -> int:
+    """Get remote file size or return 0 if file doesn't exist."""
+    try:
+        return sftp.stat(filepath).st_size
+    except IOError:
+        return 0
+
+
+def _progress(filename: str = "", remote_size: int = 0, local_size: int = 0, client: str = ""):
+    """Handle displaying progress of upload."""
+    match client:
+        case "gui":
+            # not implemented, look into having a (threaded) progress bar here
+            pass
+        case "cli":
+            # neat one-line progress indicator in terminal
+            s.write(f"{filename} {remote_size}/{local_size} {round(100*(float(remote_size)/float(local_size)), 1)}%\r")
+            s.flush()
+        case _:
+            pass
+
+
 def _sftp_upload_directory(
     sftp: paramiko.SFTPClient,
     directory: str = "",
     private_key: Union[bytes, Path] = b"",
     public_key: Union[str, Path] = "",
     overwrite: bool = False,
+    client: str = "",
 ) -> None:
     """Upload directory."""
     for item in os.walk(directory):
@@ -136,6 +161,7 @@ def _sftp_upload_directory(
                 private_key=private_key,
                 public_key=public_key,
                 overwrite=overwrite,
+                client=client,
             )
 
 
