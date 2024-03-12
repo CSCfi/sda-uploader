@@ -29,5 +29,5 @@ test:
 release-job:
   extends: .automated-release
   release:
-    description: 'SDA Uploader'
+    description: $(cat release_changes.md)
 
