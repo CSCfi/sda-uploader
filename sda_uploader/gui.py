@@ -298,7 +298,6 @@ class GUI:
     ) -> None:
         """Upload file or directory."""
         print("Starting upload process.")
-        print(overwrite)
 
         if Path(target).is_file():
             _sftp_upload_file(
