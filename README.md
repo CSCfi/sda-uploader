@@ -124,3 +124,6 @@ To run the executable on Windows:
 sdagui.exe
 sdacli.exe
 ```
+
+## Additional Configuration
+- `SFTP_CHUNK_SIZE=1048576` can be used to control the size of chunks used when uploading with SFTP. Value in bytes, default value 1 MiB.

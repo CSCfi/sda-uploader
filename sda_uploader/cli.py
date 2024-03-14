@@ -81,7 +81,7 @@ def process_arguments(args: argparse.Namespace) -> argparse.Namespace:
             sys.exit(f"Program aborted: Could not find file {args.private_key}")
 
     # User confirmation before uploading
-    if not args.overwrite:
+    if args.overwrite:
         user_confirmation = str(input("Existing files and directories will be overwritten, do you want to continue? [y/N] ") or "n").lower()  # nosec
         if not user_confirmation == "y":
             sys.exit("Program aborted.")
@@ -112,7 +112,7 @@ def parse_arguments(arguments: Union[Sequence, None]) -> argparse.Namespace:
         "-o",
         "--overwrite",
         action="store_true",
-        help="Force overwriting of existing files. If this is not set, user confirmation will be asked before uploading.",
+        help="Force overwriting of existing files. If this is not set, the program will attempt to resume uploading of partial files.",
     )
     parser.add_argument(
         "-key",
@@ -178,11 +178,20 @@ def main(arguments: Optional[Sequence] = None) -> None:
             destination=Path(cli_args.target).name,
             private_key=private_key,
             public_key=public_key,
+            overwrite=cli_args.overwrite,
+            client="cli",
         )
 
     # If target is a directory, handle directory upload case
     if Path(cli_args.target).is_dir():
-        _sftp_upload_directory(sftp=sftp_client, directory=cli_args.target, private_key=private_key, public_key=public_key)
+        _sftp_upload_directory(
+            sftp=sftp_client,
+            directory=cli_args.target,
+            private_key=private_key,
+            public_key=public_key,
+            overwrite=cli_args.overwrite,
+            client="cli",
+        )
 
     print("Program finished.")
 
