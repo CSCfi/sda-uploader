@@ -83,7 +83,7 @@ def process_arguments(args: argparse.Namespace) -> argparse.Namespace:
     # User confirmation before uploading
     if args.overwrite:
         user_confirmation = str(input("Existing files and directories will be overwritten, do you want to continue? [y/N] ") or "n").lower()  # nosec
-        if user_confirmation == "n":
+        if not user_confirmation == "y":
             sys.exit("Program aborted.")
 
     return args
