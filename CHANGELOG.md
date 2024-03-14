@@ -9,6 +9,17 @@ Always place latest update on top.
 
 ## [Unreleased]
 
+## [2024.03.1] - 2024-03-14
+
+### Added
+
+- upload progress indicator to CLI
+- new env `SFTP_CHUNK_SIZE` that can be used to control the size of the uploaded chunk, 1 MiB by default
+
+### Changed
+
+- upload method from `paramiko.SFTPClient.put` to chunked remote file write with `paramiko.SFTPClient.open.write`
+
 ## [2024.03.0] - 2024-03-07
 
 ### Fixed
@@ -340,7 +351,8 @@ Always place latest update on top.
 - remove console from gui and add linux disclaimer
 - remove old commented code, implement config file for saving field values, implement remember password for session
 
-[unreleased]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.0...HEAD
+[unreleased]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.1...HEAD
+[2024.03.1]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.0...2024.03.1
 [2024.03.0]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.02.3...2024.03.0
 [2024.02.3]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.02.2...2024.02.3
 [2024.02.2]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.02.1...2024.02.2
