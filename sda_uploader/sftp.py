@@ -129,7 +129,7 @@ def _progress(filename: str = "", remote_size: int = 0, local_size: int = 0, cli
             pass
         case "cli":
             # neat one-line progress indicator in terminal
-            s.write(f"{filename} {remote_size}/{local_size} {round(100*(float(remote_size)/float(local_size)), 1)}%\r")
+            s.write(f"{filename} {remote_size}/{local_size} {round(100 * (float(remote_size) / float(local_size)), 1)}%\r")
             s.flush()
         case _:
             pass
