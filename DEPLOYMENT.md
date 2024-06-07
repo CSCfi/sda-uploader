@@ -13,7 +13,7 @@ Select the release from https://github.com/CSCfi/sda-uploader/releases
 ## Installation
 
 1. Download ZIP archive from selected release. Archives are named as `<tool>-<python-version>-<operating-system>-<architecture>.zip`.
-Where `tool` can be `sdacli` for command line utility and `sdagui` for Graphical User Interface, `operating-system` is one of `linux`, `windows` or `macos`; `architecture` is fixed to `amd64`. For example for linux:
+Where `tool` can be `sdacli` for command line utility and `sdagui` for Graphical User Interface, `operating-system` is one of `linux`, `windows` or `macos` and `architecture` is `amd64` or `arm64`. For example for linux:
 - `sdacli-python3.11-linux-amd64.zip`
 - `sdagui-python3.11-linux-amd64.zip`
 
