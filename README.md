@@ -125,5 +125,13 @@ sdagui.exe
 sdacli.exe
 ```
 
+### Ready-to-use Releases
+You can download a pre-built executable from the [releases page](https://github.com/CSCfi/sda-uploader/releases).
+
+1. Download the zip archive for your current operating system
+2. Extract the archive to get the executable
+
+Note that the Linux and Windows builds are created with `amd64` architecture, and the MacOS build is created with `arm64` architecture. For other architectures you must build the executable yourself with the instructions above.
+
 ## Additional Configuration
 - `SFTP_CHUNK_SIZE=1048576` can be used to control the size of chunks used when uploading with SFTP. Value in bytes, default value 1 MiB.
