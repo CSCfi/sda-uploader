@@ -9,6 +9,12 @@ Always place latest update on top.
 
 ## [Unreleased]
 
+## [2024.7.0] - 2024-07-16
+
+### Changed
+
+- macos architecture package name to arm64 because it is no longer amd64 in the latest image
+
 ## [2024.03.1] - 2024-03-14
 
 ### Added
@@ -351,7 +357,8 @@ Always place latest update on top.
 - remove console from gui and add linux disclaimer
 - remove old commented code, implement config file for saving field values, implement remember password for session
 
-[unreleased]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.1...HEAD
+[unreleased]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.7.0...HEAD
+[2024.7.0]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.1...2024.7.0
 [2024.03.1]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.03.0...2024.03.1
 [2024.03.0]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.02.3...2024.03.0
 [2024.02.3]: https://gitlab.ci.csc.fi/sds-dev/sd-submit/sda-uploader/compare/2024.02.2...2024.02.3
